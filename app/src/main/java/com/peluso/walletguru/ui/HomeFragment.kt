@@ -58,7 +58,8 @@ class HomeFragment : Fragment() {
         progressBar.visibility = if (viewState.isLoading) VISIBLE else GONE
         // give the submissions to our recyclerview adapter
         viewState.submissions?.let { list ->
-            mainRecyclerView.adapter = SubmissionsRecyclerViewAdapter(list.map { it.toSubmissionCell() }).also { it.notifyDataSetChanged() }
+            mainRecyclerView.adapter = SubmissionsRecyclerViewAdapter(list.map { it.toSubmissionCell() })
+                    .also { it.notifyDataSetChanged() }
         }
     }
 
