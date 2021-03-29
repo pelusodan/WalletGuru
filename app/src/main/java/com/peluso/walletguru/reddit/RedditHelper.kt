@@ -7,10 +7,6 @@ import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.kirkbushman.araw.models.Submission
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.AccountType
-import kotlinx.coroutines.Dispatchers
-import java.util.logging.Logger
-import kotlin.concurrent.thread
-import kotlin.coroutines.CoroutineContext
 
 class RedditHelper(context: Context) {
 
@@ -21,42 +17,24 @@ class RedditHelper(context: Context) {
     init {
         // step 1 - create the helper
         helper = AuthUserlessHelper(
-            context = context,
-            clientId = context.getString(R.string.reddit_client_id),
-            deviceId = null, // set as null to use the default android UUID
-            scopes = listOf("read").toTypedArray(), // array of scopes strings
-            logging = true
+                context = context,
+                clientId = context.getString(R.string.reddit_client_id),
+                deviceId = null, // set as null to use the default android UUID
+                scopes = listOf("read").toTypedArray(), // array of scopes strings
+                logging = true
         )
         if (!helper.shouldLogin()) {
             // use saved one
-            post("user saved one")
+            logger("user saved one")
         } else {
             // you must authenticate
-            post("you must authennticate")
+            logger("you must authennticate")
         }
         // step 2 - obtain a client
         client = helper.getRedditClient()
     }
 
-    fun postsOffMain() {
-        //Dispatchers.IO.dispatch(context,)
-        getPosts()
-    }
-
-    private fun getPosts() {
-        // get the submissions from a subreddit
-        val fetcher = client?.contributionsClient?.multiredditSubmissions(
-            "finance",
-            "investing",
-            "creditcards"
-        )
-        val submissions = fetcher?.fetchNext()
-        submissions?.forEach {
-            post(it.toString())
-        }
-    }
-
-    private fun post(msg: String) {
+    private fun logger(msg: String) {
         Log.v(TAG, msg)
     }
 
@@ -67,14 +45,18 @@ class RedditHelper(context: Context) {
      */
     fun getSubmissionsFromAccountTypes(vararg accounts: AccountType): Map<AccountType, List<Submission>> {
         val map = mutableMapOf<AccountType, List<Submission>>()
+        if (accounts.isEmpty()) {
+            logger("No account types given!")
+            return map
+        }
         // first grab all the subreddits we need from the accounts given
         val subreddits = accounts.map { it.subreddits }.reduce { acc, list -> acc + list }
-        post("TOTAL SUBREDDITS = $subreddits")
+        logger("TOTAL SUBREDDITS = $subreddits")
         val fetcher =
-            client?.contributionsClient?.multiredditSubmissions(
-                *subreddits.toTypedArray(),
-                limit = 50L
-            )
+                client?.contributionsClient?.multiredditSubmissions(
+                        *subreddits.toTypedArray(),
+                        limit = 50L
+                )
         val submissions = fetcher?.fetchNext()
         // now we need to unpack the posts according to their account type, so we can put them in the map
         submissions?.forEach { submission ->
@@ -86,10 +68,10 @@ class RedditHelper(context: Context) {
             }
         }
         // logging our results
-        post(map.keys.map {
+        logger(map.keys.map {
             "${it.name}\n\n" +
                     map[it]?.map { "r/${it.subreddit} : ${it.title}" }
-                        ?.reduce { acc, s -> acc + "\n + $s" }
+                            ?.reduce { acc, s -> acc + "\n + $s" }
         }.reduce { acc, s -> acc + "\n $s" } ?: "${map.keys}")
         return map
     }
