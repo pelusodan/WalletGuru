@@ -22,4 +22,10 @@
         android:name="com.peluso.walletguru.ui.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/favorites_fragment"
+        android:name="com.peluso.walletguru.ui.FavoritesFragment"
+        android:label="@string/favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>

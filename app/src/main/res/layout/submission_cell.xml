@@ -56,5 +56,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="4.0k" />
 
+    <ToggleButton
+        android:id="@+id/favorite_button"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/favorite_selector"
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author_textview" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
