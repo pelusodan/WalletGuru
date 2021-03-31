@@ -51,7 +51,7 @@ class DashboardFragment : Fragment() {
             listView.adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_list_item_1,
-                it.userAccounts.map { it.type.name }
+                it.currentAccountBalances.map { it.accountName }
             )
         }
     }
