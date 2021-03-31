@@ -29,12 +29,12 @@ class HomeFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         viewModel =
-                ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         initViews(root)
         return root
@@ -49,11 +49,11 @@ class HomeFragment : Fragment() {
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.setHasFixedSize(true)
         val itemTouchHelper = ItemTouchHelper(object :
-                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
@@ -71,28 +71,30 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.viewState.observe(
-                viewLifecycleOwner,
-                Observer { viewState -> handleViewState(viewState) })
+            viewLifecycleOwner,
+            Observer { viewState -> handleViewState(viewState) })
     }
 
-    private fun handleViewState(viewState: MainViewState) {
-        // showing loading
-        progressBar.visibility = if (viewState.isLoading) VISIBLE else GONE
-        // give the submissions to our recyclerview adapter, also live updates
-        viewState.submissions?.let { list ->
-            val state = mainRecyclerView.layoutManager?.onSaveInstanceState()
-            mainRecyclerView.adapter =
+    private fun handleViewState(viewState: MainViewState?) {
+        viewState?.let { viewState ->
+            // showing loading
+            progressBar.visibility = if (viewState.isLoading) VISIBLE else GONE
+            // give the submissions to our recyclerview adapter, also live updates
+            viewState.submissions?.let { list ->
+                val state = mainRecyclerView.layoutManager?.onSaveInstanceState()
+                mainRecyclerView.adapter =
                     SubmissionsRecyclerViewAdapter(
-                            // makes sure that each time we get new favorites that they are checked in the recyclerview
-                            list.map { it.toSubmissionCell(viewState.favorites) },
-                            { launchDetailView(it) },
-                            { cell, shouldAdd ->
-                                viewModel.addToFavorites(cell, shouldAdd)
-                            })
-                            .also {
-                                it.notifyDataSetChanged()
-                                state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
-                            }
+                        // makes sure that each time we get new favorites that they are checked in the recyclerview
+                        list.map { it.toSubmissionCell(viewState.favorites) },
+                        { launchDetailView(it) },
+                        { cell, shouldAdd ->
+                            viewModel.addToFavorites(cell, shouldAdd)
+                        })
+                        .also {
+                            it.notifyDataSetChanged()
+                            state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
+                        }
+            }
         }
     }
 

@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        // immediately after creating the viewmodel we set up the viewmodel to use it
+        viewModel.setDatabase((application as MainApplication).getDb().dao())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
