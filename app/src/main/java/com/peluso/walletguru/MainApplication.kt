@@ -49,14 +49,14 @@ class MainApplication : Application() {
                     accountBalance = 1f,
                     accountName = "crypto",
                     // percent change equation
-                    percentChange = 20f,
+                    percentChange = 1f,
                     date = System.currentTimeMillis()
                 ),
                 AccountDto(
                     accountBalance = 2f,
                     accountName = "crypto",
                     // percent change equation
-                    percentChange = 22f,
+                    percentChange = 1f,
                     date = System.currentTimeMillis() + 1000L
                 ),
                 AccountDto(

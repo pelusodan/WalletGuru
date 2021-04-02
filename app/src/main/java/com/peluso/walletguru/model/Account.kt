@@ -1,6 +1,8 @@
 package com.peluso.walletguru.model
 
 import com.kirkbushman.araw.models.Submission
+import com.peluso.walletguru.model.Account.Companion.orderSubmissions
+import kotlin.math.abs
 
 /**
  * Class which represents a financial account to be tracked in our application. An account is linked
@@ -8,36 +10,25 @@ import com.kirkbushman.araw.models.Submission
  */
 class Account(val type: AccountType, val currentBalance: Float, val percentageChange: Float) {
 
-
     companion object {
-        fun List<Account>.orderSubmission(accountMap: Map<AccountType, List<Submission>>) {
+        fun List<Account>.orderSubmissions(accountMap: Map<AccountType, List<Submission>>):
+                List<Submission> {
             //TODO: refactor to use the new parameters (provide mapping of account type to submission list)
             // I've kept your below code as a reference
-        }
 
-        fun List<Account>.orderSubmissions(
-            submissions: List<Submission>,
-            accounts: List<Account>
-        ): List<Submission> {
+            val sortedAccounts = this.sortedByDescending { abs(it.percentageChange) }
 
-            //list of accounts sorted in order of decreasing percentage change
-            val sortedAccounts = accounts.sortedByDescending { it.percentageChange }
+            val subredditRankings = sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
 
-            //map ranked accounts index to account type
-            val subredditRankings = sortedAccounts.map { it.type.toString() to sortedAccounts.indexOf(it) }.toMap()
+            val sortedAccountMap = ArrayList<Submission>();
 
-            //compator using indexes of subreddits in the map
-            val comparator = Comparator<Submission> {submission1, submission2
-            ->
-                when {
-                    subredditRankings.getValue(submission1.subreddit) > subredditRankings.getValue(submission2.subreddit) -> 1
-                    subredditRankings.getValue(submission1.subreddit) < subredditRankings.getValue(submission2.subreddit) -> -1
-                    else -> 0
+            subredditRankings.entries.forEach {
+                if (accountMap.containsKey(it.key)) {
+                    sortedAccountMap.addAll(accountMap.getValue(it.key))
                 }
             }
 
-            // it.subreddit to subredditRankings.getValue(it.subreddit)
-            return submissions.sortedWith(comparator)
+            return sortedAccountMap
         }
     }
 }
