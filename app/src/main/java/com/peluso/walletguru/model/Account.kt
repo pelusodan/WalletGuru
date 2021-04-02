@@ -11,11 +11,29 @@ class Account(val type: AccountType, val currentBalance: Float, val percentageCh
     //TODO: make this able to be stored in a sqlite database or in sharedprefs so we can save a user's
     // balance over time
 
-    fun List<Account>.orderSubmissions(submissions: List<Submission>): List<Submission> {
-           //TODO: write the algorithm for how to order a list of submissions based on the
-           // performance of the account
 
-        return submissions
+    companion object {
+        fun List<Account>.orderSubmissions(submissions: List<Submission>, accounts: List<Account>): List<Submission> {
+
+            //list of accounts sorted in order of decreasing percentage change
+            val sortedAccounts = accounts.sortedByDescending { it.percentageChange }
+
+            //map ranked accounts index to account type
+            val subredditRankings = sortedAccounts.map { it.type.toString() to sortedAccounts.indexOf(it) }.toMap()
+
+            //compator using indexes of subreddits in the map
+            val comparator = Comparator<Submission> {submission1, submission2
+            ->
+                when {
+                    subredditRankings.getValue(submission1.subreddit) > subredditRankings.getValue(submission2.subreddit) -> 1
+                    subredditRankings.getValue(submission1.subreddit) < subredditRankings.getValue(submission2.subreddit) -> -1
+                    else -> 0
+                }
+            }
+
+            // it.subreddit to subredditRankings.getValue(it.subreddit)
+            return submissions.sortedWith(comparator)
+        }
     }
 }
 
