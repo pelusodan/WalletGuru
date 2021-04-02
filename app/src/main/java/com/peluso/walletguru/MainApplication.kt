@@ -49,28 +49,28 @@ class MainApplication : Application() {
                     accountBalance = 1f,
                     accountName = "crypto",
                     // percent change equation
-                    percentChange = 100f * ((103f - 100f) / 100f),
+                    percentChange = 20f,
                     date = System.currentTimeMillis()
                 ),
                 AccountDto(
                     accountBalance = 2f,
                     accountName = "crypto",
                     // percent change equation
-                    percentChange = 100f * ((103f - 100f) / 100f),
+                    percentChange = 22f,
                     date = System.currentTimeMillis() + 1000L
                 ),
                 AccountDto(
                     accountBalance = 5f,
                     accountName = "mortgage",
                     // percent change equation
-                    percentChange = 100f * ((103f - 100f) / 100f),
+                    percentChange = 19f,
                     date = System.currentTimeMillis() + 1000L
                 ),
                 AccountDto(
                     accountBalance = 30f,
                     accountName = "saving",
                     // percent change equation
-                    percentChange = 100f * ((103f - 100f) / 100f),
+                    percentChange = 10f,
                     date = System.currentTimeMillis() + 1000L
                 )
             )

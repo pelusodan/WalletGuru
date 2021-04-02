@@ -8,12 +8,17 @@ import com.kirkbushman.araw.models.Submission
  */
 class Account(val type: AccountType, val currentBalance: Float, val percentageChange: Float) {
 
-    //TODO: make this able to be stored in a sqlite database or in sharedprefs so we can save a user's
-    // balance over time
-
 
     companion object {
-        fun List<Account>.orderSubmissions(submissions: List<Submission>, accounts: List<Account>): List<Submission> {
+        fun List<Account>.orderSubmission(accountMap: Map<AccountType, List<Submission>>) {
+            //TODO: refactor to use the new parameters (provide mapping of account type to submission list)
+            // I've kept your below code as a reference
+        }
+
+        fun List<Account>.orderSubmissions(
+            submissions: List<Submission>,
+            accounts: List<Account>
+        ): List<Submission> {
 
             //list of accounts sorted in order of decreasing percentage change
             val sortedAccounts = accounts.sortedByDescending { it.percentageChange }
