@@ -53,7 +53,7 @@ dependencies {
     implementation 'com.github.KirkBushman:ARAW:1.0.0'
     // ROOM sql library
     def room_version = "2.2.6"
-    implementation "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
