@@ -25,11 +25,12 @@ class MainViewModel : ViewModel() {
     private var redditHelper: RedditHelper? = null
 
     fun initRedditHelper(context: Context) {
+        _viewState.postValue(_viewState.value?.copy(isLoading = true, submissions = null))
         thread {
             viewState.value?.let { state ->
                 redditHelper = RedditHelper(context).apply {
                     getSubmissionsFromAccountTypes(
-                        *state.userAccounts.map { it.type }.toTypedArray()
+                            *state.userAccounts.map { it.type }.toTypedArray()
                     ).let { orderSubmissions(it) }
                 }
             }
@@ -37,12 +38,6 @@ class MainViewModel : ViewModel() {
     }
 
     private fun orderSubmissions(map: Map<AccountType, List<Submission>>) {
-        //TODO: make this based on actual values and standings of the accounts. We should probably
-        // make this a dynamically calculated ranking based on your input (which should use the same viewmodel)
-        // for now I'll make it loop through all of them and add it to the viewstate
-        //val reduced = map.values.reduce { acc, list -> acc + list }
-        //_viewState.postValue(_viewState.value?.copy(submissions = reduced, isLoading = false))
-
         _viewState.value?.userAccounts.let {
             _viewState.postValue(_viewState.value?.copy(submissions = it?.orderSubmissions(map), isLoading = false))
         }
@@ -71,11 +66,11 @@ class MainViewModel : ViewModel() {
             Log.wtf("TAG", balances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
             // FIRST VIEWSTATE UPDATE - WILL NOT BE NULL AFTER THIS POINT (should use copy)
             _viewState.postValue(
-                MainViewState(
-                    currentAccountBalances = orderedBalances,
-                    ledger = balances,
-                    userAccounts = orderedBalances.toAccounts()
-                )
+                    MainViewState(
+                            currentAccountBalances = orderedBalances,
+                            ledger = balances,
+                            userAccounts = orderedBalances.toAccounts()
+                    )
             )
         }
     }
