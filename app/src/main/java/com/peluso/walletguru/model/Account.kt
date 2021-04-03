@@ -20,15 +20,36 @@ class Account(val type: AccountType, val currentBalance: Float, val percentageCh
 
             val subredditRankings = sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
 
-            val sortedAccountMap = ArrayList<Submission>();
+            // show all first posts in order of priority accounts, then all second posts
+            // in order of priority accounts, then all third posts and so forth
+            val sortedAccountMap = LinkedHashMap<AccountType, List<Submission>>()
 
             subredditRankings.entries.forEach {
                 if (accountMap.containsKey(it.key)) {
-                    sortedAccountMap.addAll(accountMap.getValue(it.key))
+                    sortedAccountMap[it.key] = accountMap.getValue(it.key)
                 }
             }
 
-            return sortedAccountMap
+            var maxLoopCounter = 0
+
+            // loop through map to find max loop counter for building sorted array
+            sortedAccountMap.entries.forEach {
+                val value = sortedAccountMap.getValue(it.key).size
+                if (value > maxLoopCounter) {
+                    maxLoopCounter = value
+                }
+            }
+
+            val sortedArray = ArrayList<Submission>();
+
+            for (i in 0..maxLoopCounter) {
+                sortedAccountMap.entries.forEach {
+                    if (i < it.value.size)
+                    sortedArray.add(it.value[i])
+                }
+            }
+
+            return sortedArray
         }
     }
 }

@@ -44,7 +44,7 @@ class MainViewModel : ViewModel() {
         //_viewState.postValue(_viewState.value?.copy(submissions = reduced, isLoading = false))
 
         _viewState.value?.userAccounts.let {
-            _viewState.postValue(_viewState.value?.copy(submissions = it?.orderSubmissions(map)))
+            _viewState.postValue(_viewState.value?.copy(submissions = it?.orderSubmissions(map), isLoading = false))
         }
     }
 
