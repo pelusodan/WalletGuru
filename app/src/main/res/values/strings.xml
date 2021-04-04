@@ -6,4 +6,14 @@
     <string name="settings">About</string>
     <string name="favorites">Favorites</string>
     <string name="about">About</string>
+
+    <string name="account_prompt">Choose an account</string>
+    <string-array name="account_arrays">
+        <item>Investment</item>
+        <item>Crypto</item>
+        <item>Mortgage</item>
+        <item>Saving</item>
+    </string-array>
+
+
 </resources>
