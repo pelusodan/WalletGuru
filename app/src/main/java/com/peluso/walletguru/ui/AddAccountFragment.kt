@@ -14,7 +14,7 @@ import com.peluso.walletguru.R
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
 
-class DashboardFragment : Fragment() {
+class AddAccountFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var listView: ListView
@@ -24,7 +24,7 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        val root = inflater.inflate(R.layout.fragment_addaccount, container, false)
         initViews(root)
         viewModel =
             ViewModelProvider(requireActivity()).get(MainViewModel::class.java)

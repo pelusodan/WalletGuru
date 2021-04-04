@@ -13,15 +13,15 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.peluso.walletguru.ui.DashboardFragment"
+        android:name="com.peluso.walletguru.ui.AddAccountFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_addaccount" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.peluso.walletguru.ui.NotificationsFragment"
+        android:name="com.peluso.walletguru.ui.UpdateBalanceFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_updatebalance" />
 
     <fragment
         android:id="@+id/favorites_fragment"
