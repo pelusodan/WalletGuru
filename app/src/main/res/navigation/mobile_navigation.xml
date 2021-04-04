@@ -28,4 +28,11 @@
         android:name="com.peluso.walletguru.ui.FavoritesFragment"
         android:label="@string/favorites"
         tools:layout="@layout/fragment_favorites" />
+
+    <fragment
+        android:id="@+id/about_fragment"
+        android:name="com.peluso.walletguru.ui.AboutFragment"
+        android:label="@string/about"
+        tools:layout="@layout/fragment_about" />
+
 </navigation>
