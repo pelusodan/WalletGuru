@@ -1,5 +1,6 @@
 package com.peluso.walletguru.ui
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -103,7 +106,28 @@ class HomeFragment : Fragment() {
     }
 
     private fun launchDetailView(cell: SubmissionCell) {
-        //TODO: make this launch an expanded view of the submission
+        val builder = AlertDialog.Builder(requireContext())
+        val view = layoutInflater.inflate(R.layout.detail_submission_cell, null)
+        builder.setView(view)
+        val title = view.findViewById<TextView>(R.id.title_textview)
+        val subreddit = view.findViewById<TextView>(R.id.subreddit_textview)
+        val author = view.findViewById<TextView>(R.id.author_textview)
+        val body = view.findViewById<TextView>(R.id.body_textview)
+        val votes = view.findViewById<TextView>(R.id.votes_textview)
+        val favorite = view.findViewById<ToggleButton>(R.id.favorite_button)
+        cell.let { cell ->
+            title.text = cell.title
+            subreddit.text = cell.subreddit
+            author.text = cell.author
+            body.text = cell.body
+            votes.text = cell.votes.toString() + " ↑"
+            favorite.isChecked = cell.isFavorited
+            favorite.setOnClickListener {
+                viewModel.addToFavorites(cell, favorite.isChecked)
+            }
+        }
+        val dialog = builder.create()
+        dialog.show()
     }
 
 }

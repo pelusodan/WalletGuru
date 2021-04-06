@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_settings -> {
                 // TODO: launch some settings for the user
+                navController.navigate(R.id.about_fragment)
                 true
             }
             android.R.id.home -> {
