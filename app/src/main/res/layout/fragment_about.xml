@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Guiding you to stay on top of your finances."
+        android:text="@string/about_slogan"
         android:textSize="25sp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,8 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textStyle="italic"
-        android:text="Wallet Guru is a personalized financial information platform based on providing user-relevant Reddit posts from logged expense information. Users can track balances over extended periods using different categories (ex. Investments, savings, debt balances, personal budgets) and be suggested posts in order of importance based on their performance. Using our simple logging system, track all your expenses in seconds – simply input information for each category to see your article feed instantly update to accommodate the changes in performance. Our proprietary sorting algorithm will ensure you can swipe away posts you’ve already read and stay up to date every time you open the app. "
+        android:text="@string/about_app"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
