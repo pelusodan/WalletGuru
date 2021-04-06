@@ -21,7 +21,6 @@
         android:id="@+id/spinnerAccountType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:entries="@array/account_arrays"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
