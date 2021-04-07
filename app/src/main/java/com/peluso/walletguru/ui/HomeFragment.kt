@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -115,6 +116,8 @@ class HomeFragment : Fragment() {
         val body = view.findViewById<TextView>(R.id.body_textview)
         val votes = view.findViewById<TextView>(R.id.votes_textview)
         val favorite = view.findViewById<ToggleButton>(R.id.favorite_button)
+        val urlView = view.findViewById<View>(R.id.detail_webview_layout)
+        val webView = view.findViewById<WebView>(R.id.detail_webview)
         cell.let { cell ->
             title.text = cell.title
             subreddit.text = cell.subreddit
@@ -124,6 +127,15 @@ class HomeFragment : Fragment() {
             favorite.isChecked = cell.isFavorited
             favorite.setOnClickListener {
                 viewModel.addToFavorites(cell, favorite.isChecked)
+            }
+            cell.url?.let {
+                urlView.visibility = VISIBLE
+                webView.apply {
+                    loadUrl(it)
+                    setInitialScale(75)
+                    settings.builtInZoomControls = true
+                    settings.javaScriptEnabled = true
+                }
             }
         }
         val dialog = builder.create()

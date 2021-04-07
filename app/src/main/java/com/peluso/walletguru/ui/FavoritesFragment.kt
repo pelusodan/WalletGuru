@@ -1,11 +1,15 @@
 package com.peluso.walletguru.ui
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -61,7 +65,38 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun launchDetailView(cell: SubmissionCell) {
-        //TOOD: launch same detailed view of the cell in the favorites page (make a class for this)
-
+        val builder = AlertDialog.Builder(requireContext())
+        val view = layoutInflater.inflate(R.layout.detail_submission_cell, null)
+        builder.setView(view)
+        val title = view.findViewById<TextView>(R.id.title_textview)
+        val subreddit = view.findViewById<TextView>(R.id.subreddit_textview)
+        val author = view.findViewById<TextView>(R.id.author_textview)
+        val body = view.findViewById<TextView>(R.id.body_textview)
+        val votes = view.findViewById<TextView>(R.id.votes_textview)
+        val favorite = view.findViewById<ToggleButton>(R.id.favorite_button)
+        val urlView = view.findViewById<View>(R.id.detail_webview_layout)
+        val webView = view.findViewById<WebView>(R.id.detail_webview)
+        cell.let { cell ->
+            title.text = cell.title
+            subreddit.text = cell.subreddit
+            author.text = cell.author
+            body.text = cell.body
+            votes.text = cell.votes.toString() + " ↑"
+            favorite.isChecked = cell.isFavorited
+            favorite.setOnClickListener {
+                viewModel.addToFavorites(cell, favorite.isChecked)
+            }
+            cell.url?.let {
+                urlView.visibility = VISIBLE
+                webView.apply {
+                    loadUrl(it)
+                    setInitialScale(75)
+                    settings.builtInZoomControls = true
+                    settings.javaScriptEnabled = true
+                }
+            }
+        }
+        val dialog = builder.create()
+        dialog.show()
     }
 }
