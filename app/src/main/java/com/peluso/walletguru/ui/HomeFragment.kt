@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
-import com.peluso.walletguru.ui.recyclerview.SubmissionCell
-import com.peluso.walletguru.ui.recyclerview.SubmissionCell.Companion.toSubmissionCell
+import com.peluso.walletguru.model.SubmissionCell
+import com.peluso.walletguru.model.SubmissionCell.Companion.toSubmissionCell
 import com.peluso.walletguru.ui.recyclerview.SubmissionsRecyclerViewAdapter
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
@@ -32,12 +32,12 @@ class HomeFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         viewModel =
-                ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         initViews(root)
         return root
@@ -52,11 +52,11 @@ class HomeFragment : Fragment() {
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.setHasFixedSize(true)
         val itemTouchHelper = ItemTouchHelper(object :
-                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
@@ -74,8 +74,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.viewState.observe(
-                viewLifecycleOwner,
-                Observer { viewState -> handleViewState(viewState) })
+            viewLifecycleOwner,
+            Observer { viewState -> handleViewState(viewState) })
     }
 
     private fun handleViewState(viewState: MainViewState?) {
@@ -86,17 +86,17 @@ class HomeFragment : Fragment() {
             viewState.submissions?.let { list ->
                 val state = mainRecyclerView.layoutManager?.onSaveInstanceState()
                 mainRecyclerView.adapter =
-                        SubmissionsRecyclerViewAdapter(
-                                // makes sure that each time we get new favorites that they are checked in the recyclerview
-                                list.map { it.toSubmissionCell(viewState.favorites) },
-                                { launchDetailView(it) },
-                                { cell, shouldAdd ->
-                                    viewModel.addToFavorites(cell, shouldAdd)
-                                })
-                                .also {
-                                    it.notifyDataSetChanged()
-                                    state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
-                                }
+                    SubmissionsRecyclerViewAdapter(
+                        // makes sure that each time we get new favorites that they are checked in the recyclerview
+                        list.map { it.toSubmissionCell(viewState.favorites) },
+                        { launchDetailView(it) },
+                        { cell, shouldAdd ->
+                            viewModel.addToFavorites(cell, shouldAdd)
+                        })
+                        .also {
+                            it.notifyDataSetChanged()
+                            state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
+                        }
             } ?: kotlin.run {
                 // this is sort of like an `else` for the null check that happens above
                 // in this case we will show an empty screen while we load

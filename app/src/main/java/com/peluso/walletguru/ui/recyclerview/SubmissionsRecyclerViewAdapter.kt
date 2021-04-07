@@ -1,14 +1,13 @@
 package com.peluso.walletguru.ui.recyclerview
 
-import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.core.util.getOrDefault
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
+import com.peluso.walletguru.model.SubmissionCell
 
 /**
  * Main recyclerview for showing posts from the reddit feed

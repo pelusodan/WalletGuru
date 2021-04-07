@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
-import com.peluso.walletguru.ui.recyclerview.SubmissionCell
+import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.ui.recyclerview.SubmissionsRecyclerViewAdapter
 import com.peluso.walletguru.viewmodel.MainViewModel
 
@@ -38,6 +38,7 @@ class FavoritesFragment : Fragment() {
         emptyFavoritesLayout = root.findViewById(R.id.empty_favorites_layout)
         recyclerView = root.findViewById(R.id.favorites_recyclerview)
         viewModel.viewState.observe(viewLifecycleOwner, Observer { state ->
+            val scrollState = recyclerView.layoutManager?.onSaveInstanceState()
             state.favorites.let { list ->
                 recyclerView.adapter = SubmissionsRecyclerViewAdapter(
                     list,
@@ -45,7 +46,10 @@ class FavoritesFragment : Fragment() {
                     { cell, shouldAdd ->
                         viewModel.addToFavorites(cell, shouldAdd)
                     })
-                    .also { it.notifyDataSetChanged() }
+                    .also {
+                        it.notifyDataSetChanged()
+                        scrollState?.let { recyclerView.layoutManager?.onRestoreInstanceState(it) }
+                    }
                 showEmptyFavoritesMessage(list.isEmpty())
             }
         })

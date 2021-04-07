@@ -7,18 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kirkbushman.araw.models.Submission
 import com.peluso.walletguru.database.AccountsDao
+import com.peluso.walletguru.database.FavoritesDao
 import com.peluso.walletguru.model.Account.Companion.orderSubmissions
 import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.model.toAccounts
 import com.peluso.walletguru.reddit.RedditHelper
-import com.peluso.walletguru.ui.recyclerview.SubmissionCell
+import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.viewstate.MainViewState
 import kotlin.concurrent.thread
 
 class MainViewModel : ViewModel() {
 
-    private lateinit var mDao: AccountsDao
-    private val _viewState: MutableLiveData<MainViewState> = MutableLiveData()
+    private lateinit var accountsDao: AccountsDao
+    private lateinit var favoritesDao: FavoritesDao
+    private val _viewState: MutableLiveData<MainViewState> = MutableLiveData(MainViewState())
     val viewState: LiveData<MainViewState> = _viewState
 
     private var redditHelper: RedditHelper? = null
@@ -29,7 +31,7 @@ class MainViewModel : ViewModel() {
             viewState.value?.let { state ->
                 redditHelper = RedditHelper(context).apply {
                     getSubmissionsFromAccountTypes(
-                            *state.userAccounts.map { it.type }.toTypedArray()
+                        *state.userAccounts.map { it.type }.toTypedArray()
                     ).let { orderSubmissions(it) }
                 }
             }
@@ -37,39 +39,61 @@ class MainViewModel : ViewModel() {
     }
 
     private fun orderSubmissions(map: Map<AccountType, List<Submission>>) {
-        _viewState.value?.userAccounts.let {
-            _viewState.postValue(_viewState.value?.copy(submissions = it?.orderSubmissions(map), isLoading = false))
+        _viewState.value?.userAccounts?.let {
+            _viewState.postValue(
+                _viewState.value?.copy(
+                    submissions = it.orderSubmissions(map),
+                    isLoading = false
+                )
+            )
         }
     }
 
     fun removeSubmissionAt(position: Int) {
-        _viewState.value?.let { state ->
-            _viewState.postValue(state.removeSubmissionAt(position))
+        _viewState.postValue(_viewState.value?.removeSubmissionAt(position))
+    }
+
+    // functions as a toggle through the heart button
+    fun addToFavorites(cell: SubmissionCell, bool: Boolean) {
+        thread {
+            if (bool) {
+                favoritesDao.addFavorite(cell.copy(isFavorited = bool))
+            } else {
+                favoritesDao.removeFavorite(cell)
+            }
+            setFavorites()
         }
     }
 
-    fun addToFavorites(cell: SubmissionCell, bool: Boolean) {
-        _viewState.postValue(_viewState.value!!.addToFavorites(cell, bool))
+    fun setDatabase(accountsDao: AccountsDao, favoritesDao: FavoritesDao) {
+        this.accountsDao = accountsDao
+        this.favoritesDao = favoritesDao
+        // as soon as we get the user dao, we update our viewstate to hold the user's accounts in a map
+        // also update favorites to match local database
+        setAccounts()
+        setFavorites()
     }
 
-    fun setDatabase(dao: AccountsDao) {
-        mDao = dao
-        // as soon as we get the user dao, we update our viewstate to hold the user's accounts in a map
-        setAccounts()
+    private fun setFavorites() {
+        thread {
+            val favorites = favoritesDao.getAllFavorites()
+            _viewState.postValue(_viewState.value?.copy(favorites = favorites))
+            Log.wtf("TAG", "Favorites: \n\n\n" + favorites.toString() + "\n\n\n")
+        }
     }
 
     private fun setAccounts() {
         thread {
-            val allBalances = mDao.getAllAccounts()
-            val mostRecentAccountBalances = mDao.getMostRecentAccountBalances()
+            val allBalances = accountsDao.getAllAccounts()
+            val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
             Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
             // FIRST VIEWSTATE UPDATE - WILL NOT BE NULL AFTER THIS POINT (should use copy)
             _viewState.postValue(
-                    MainViewState(
-                            currentAccountBalances = mostRecentAccountBalances,
-                            ledger = allBalances,
-                            userAccounts = mostRecentAccountBalances.toAccounts()
-                    )
+                _viewState.value?.copy(
+                    currentAccountBalances = mostRecentAccountBalances,
+                    ledger = allBalances,
+                    userAccounts = mostRecentAccountBalances.toAccounts()
+                )
             )
         }
     }

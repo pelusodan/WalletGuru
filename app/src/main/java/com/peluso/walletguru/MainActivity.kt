@@ -29,15 +29,16 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
-                setOf(
-                        R.id.navigation_dashboard, R.id.navigation_home, R.id.navigation_notifications
-                )
+            setOf(
+                R.id.navigation_dashboard, R.id.navigation_home, R.id.navigation_notifications
+            )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // immediately after creating the viewmodel we set up the viewmodel to use db
-        viewModel.setDatabase((application as MainApplication).getDb().dao())
+        val db = (application as MainApplication).getDb()
+        viewModel.setDatabase(db.accountsDao(), db.favoritesDao())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
