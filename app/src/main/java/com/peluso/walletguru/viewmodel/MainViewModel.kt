@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.kirkbushman.araw.models.Submission
 import com.peluso.walletguru.database.AccountsDao
 import com.peluso.walletguru.model.Account.Companion.orderSubmissions
-import com.peluso.walletguru.model.AccountDto
 import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.model.toAccounts
 import com.peluso.walletguru.reddit.RedditHelper
@@ -61,30 +60,18 @@ class MainViewModel : ViewModel() {
 
     private fun setAccounts() {
         thread {
-            val balances = mDao.getAllAccounts()
-            val orderedBalances = orderBalances(balances)
-            Log.wtf("TAG", balances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
+            val allBalances = mDao.getAllAccounts()
+            val mostRecentAccountBalances = mDao.getMostRecentAccountBalances()
+            Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
             // FIRST VIEWSTATE UPDATE - WILL NOT BE NULL AFTER THIS POINT (should use copy)
             _viewState.postValue(
                     MainViewState(
-                            currentAccountBalances = orderedBalances,
-                            ledger = balances,
-                            userAccounts = orderedBalances.toAccounts()
+                            currentAccountBalances = mostRecentAccountBalances,
+                            ledger = allBalances,
+                            userAccounts = mostRecentAccountBalances.toAccounts()
                     )
             )
         }
-    }
-
-    private fun orderBalances(balances: List<AccountDto>): List<AccountDto> {
-        val map = mutableMapOf<String, AccountDto>()
-        balances.forEach { currBalance ->
-            map[currBalance.accountName]?.let { max ->
-                if (currBalance.date > max.date) map[currBalance.accountName] = currBalance
-            } ?: kotlin.run {
-                map[currBalance.accountName] = currBalance
-            }
-        }
-        return map.values.toList()
     }
 
 }

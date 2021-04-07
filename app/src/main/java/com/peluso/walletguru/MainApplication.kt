@@ -31,13 +31,13 @@ class MainApplication : Application() {
         thread {
             db.dao().updateBalance(
                     AccountDto(
-                            accountBalance = 100f,
+                            accountBalance = 3f,
                             accountName = "investment",
                             percentChange = 0f,
                             date = System.currentTimeMillis()
                     ),
                     AccountDto(
-                            accountBalance = 103f,
+                            accountBalance = 4f,
                             accountName = "investment",
                             // percent change equation
                             percentChange = 100f * ((103f - 100f) / 100f),
@@ -77,11 +77,17 @@ class MainApplication : Application() {
                             // percent change equation
                             percentChange = 99f,
                             date = System.currentTimeMillis() + 8000L
+                    ),
+                    AccountDto(
+                            accountBalance = 4000f,
+                            accountName = "real_estate",
+                            // percent change equation
+                            percentChange = 0f,
+                            date = System.currentTimeMillis() + 8000L
                     )
             )
         }
     }
-
 
     fun getDb(): AccountsDatabase = db
 }
