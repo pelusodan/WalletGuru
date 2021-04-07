@@ -70,32 +70,36 @@ class MainViewModel : ViewModel() {
         this.favoritesDao = favoritesDao
         // as soon as we get the user dao, we update our viewstate to hold the user's accounts in a map
         // also update favorites to match local database
-        setAccounts()
-        setFavorites()
+        initViewState()
+    }
+
+    /**
+     * enforces no concurrency errors
+     */
+    private fun initViewState() {
+        thread {
+            setFavorites()
+            setAccounts()
+        }
     }
 
     private fun setFavorites() {
-        thread {
-            val favorites = favoritesDao.getAllFavorites()
-            _viewState.postValue(_viewState.value?.copy(favorites = favorites))
-            Log.wtf("TAG", "Favorites: \n\n\n" + favorites.toString() + "\n\n\n")
-        }
+        val favorites = favoritesDao.getAllFavorites()
+        _viewState.postValue(viewState.value?.copy(favorites = favorites))
+        Log.wtf("TAG", "Favorites: \n\n\n" + favorites.toString() + "\n\n\n")
     }
 
     private fun setAccounts() {
-        thread {
-            val allBalances = accountsDao.getAllAccounts()
-            val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
-            Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
-            // FIRST VIEWSTATE UPDATE - WILL NOT BE NULL AFTER THIS POINT (should use copy)
-            _viewState.postValue(
-                _viewState.value?.copy(
-                    currentAccountBalances = mostRecentAccountBalances,
-                    ledger = allBalances,
-                    userAccounts = mostRecentAccountBalances.toAccounts()
-                )
+        val allBalances = accountsDao.getAllAccounts()
+        val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
+        Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
+        _viewState.postValue(
+            viewState.value?.copy(
+                currentAccountBalances = mostRecentAccountBalances,
+                ledger = allBalances,
+                userAccounts = mostRecentAccountBalances.toAccounts()
             )
-        }
+        )
     }
 
 }
