@@ -51,7 +51,6 @@ class SubmissionsRecyclerViewAdapter(
             favortieToggle.setOnClickListener {
                 onFavoriteClick(submission, favortieToggle.isChecked)
             }
-
         }
     }
 

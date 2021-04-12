@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="25dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayoutAccountHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/cardview_shadow_start_color"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/accountHistoryDate_Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Date" />
+
+        <TextView
+            android:id="@+id/accountHistoryDate_Value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/accountHistoryDate_Title"
+            tools:hint="Date" />
+
+
+        <TextView
+            android:id="@+id/accountHistoryBalance_Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toStartOf="@+id/accountHistoryPercentage_Title"
+            app:layout_constraintStart_toEndOf="@+id/accountHistoryDate_Title"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Balance" />
+
+        <TextView
+            android:id="@+id/accountHistoryBalance_Value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toStartOf="@+id/accountHistoryPercentage_Value"
+            app:layout_constraintStart_toEndOf="@+id/accountHistoryDate_Value"
+            app:layout_constraintTop_toBottomOf="@+id/accountHistoryBalance_Title"
+            tools:hint="Balance" />
+
+        <TextView
+            android:id="@+id/accountHistoryPercentage_Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="% Change" />
+
+        <TextView
+            android:id="@+id/accountHistoryPercentage_Value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/accountHistoryPercentage_Title"
+            tools:hint="% Change" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+
