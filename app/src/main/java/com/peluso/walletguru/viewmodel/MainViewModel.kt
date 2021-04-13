@@ -1,7 +1,10 @@
 package com.peluso.walletguru.viewmodel
 
+import android.accounts.Account
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +18,7 @@ import com.peluso.walletguru.model.toAccounts
 import com.peluso.walletguru.reddit.RedditHelper
 import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.viewstate.MainViewState
+import java.util.stream.Collectors
 import kotlin.concurrent.thread
 
 class MainViewModel : ViewModel() {
@@ -111,6 +115,34 @@ class MainViewModel : ViewModel() {
             accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentChange, date))
             // updating our viewstate
             setAccounts()
+        }
+    }
+
+    fun addNewAccount(accountName: String, accountBalance: Float) {
+        thread {
+            val accounts = accountsDao.getAllAccounts()
+            val accountNames = ArrayList<String>()
+
+            //build a unique list of account names
+            for (account in accounts) {
+                if (!accountNames.contains(account.accountName)) {
+                    accountNames.add(account.accountName)
+                }
+            }
+
+            //check if new account being added already exist in the list
+            for (name in accountNames) {
+                // if account already exist show toast
+                if (accountNames.contains(accountName)) {
+                    //show Toast
+                } else {
+                    //if account doesnt exist add to balance list
+                    val percentageChange = 0f;
+                    val date = System.currentTimeMillis()
+                    accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentageChange, date))
+                    setAccounts()
+                }
+            }
         }
     }
 

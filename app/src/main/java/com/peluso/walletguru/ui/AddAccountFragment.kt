@@ -62,14 +62,10 @@ class AddAccountFragment : Fragment() {
 
         builder.setPositiveButton("SUBMIT"
         ) { dialog, id ->
-            thread {
-                /*viewModel.updateAccountBalance(
-                                accountBalance = parseFloat(accountBalance),
-                                accountName = accountName,
-                                percentChange = 0f,
-                                date = System.currentTimeMillis()
+                /*viewModel.addNewAccount(
+                    accountBalance = parseFloat(accountBalance),
+                    accountName = accountName
                 )*/ null
-            }
         }
 
         builder.setNegativeButton("CANCEL", null)
@@ -77,18 +73,6 @@ class AddAccountFragment : Fragment() {
 
         val dialog = builder.create()
         dialog.show()
-    }
-
-    private fun doesAccountExist(accountName: String): Boolean {
-        val accounts = db.accountsDao().getAllAccounts()
-
-        for (account in accounts) {
-            if (account.accountName == accountName) {
-                return true
-            }
-        }
-
-        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
