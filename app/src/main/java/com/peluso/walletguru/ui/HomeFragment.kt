@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.model.SubmissionCell.Companion.toSubmissionCell
@@ -28,7 +29,7 @@ import com.peluso.walletguru.viewstate.MainViewState
 class HomeFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var mainButton: Button
+    private lateinit var mainButton: FloatingActionButton
     private lateinit var mainRecyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
 
