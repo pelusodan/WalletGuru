@@ -60,20 +60,15 @@ class AddAccountFragment : Fragment() {
         val accountName = enterAccountNameView.text.toString()
         val accountBalance = enterAccountBalanceView.text.toString()
 
-        if (MainApplication.getDbInstance() != null) {
-            db = MainApplication.getDbInstance()!!
-        }
-
         builder.setPositiveButton("SUBMIT"
         ) { dialog, id ->
             thread {
-                /*db.accountsDao().updateBalance(
-                        AccountDto(
+                /*viewModel.updateAccountBalance(
                                 accountBalance = parseFloat(accountBalance),
                                 accountName = accountName,
                                 percentChange = 0f,
                                 date = System.currentTimeMillis()
-                        ))*/ null
+                )*/ null
             }
         }
 

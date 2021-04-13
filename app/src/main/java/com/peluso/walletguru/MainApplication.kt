@@ -27,13 +27,6 @@ class MainApplication : Application() {
         testAddAccount()
     }
 
-    companion object {
-        var database : LocalDatabase? = null
-        fun getDbInstance() : LocalDatabase? {
-            return database
-        }
-    }
-
     private fun testAddAccount() {
         thread {
             db.accountsDao().updateBalance(
