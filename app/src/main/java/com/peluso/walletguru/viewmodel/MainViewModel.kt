@@ -9,6 +9,7 @@ import com.kirkbushman.araw.models.Submission
 import com.peluso.walletguru.database.AccountsDao
 import com.peluso.walletguru.database.FavoritesDao
 import com.peluso.walletguru.model.Account.Companion.orderSubmissions
+import com.peluso.walletguru.model.AccountDto
 import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.model.toAccounts
 import com.peluso.walletguru.reddit.RedditHelper
@@ -31,7 +32,7 @@ class MainViewModel : ViewModel() {
             viewState.value?.let { state ->
                 redditHelper = RedditHelper(context).apply {
                     getSubmissionsFromAccountTypes(
-                        *state.userAccounts.map { it.type }.toTypedArray()
+                            *state.userAccounts.map { it.type }.toTypedArray()
                     ).let { orderSubmissions(it) }
                 }
             }
@@ -41,10 +42,10 @@ class MainViewModel : ViewModel() {
     private fun orderSubmissions(map: Map<AccountType, List<Submission>>) {
         _viewState.value?.userAccounts?.let {
             _viewState.postValue(
-                _viewState.value?.copy(
-                    submissions = it.orderSubmissions(map),
-                    isLoading = false
-                )
+                    _viewState.value?.copy(
+                            submissions = it.orderSubmissions(map),
+                            isLoading = false
+                    )
             )
         }
     }
@@ -94,12 +95,23 @@ class MainViewModel : ViewModel() {
         val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
         Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
         _viewState.postValue(
-            viewState.value?.copy(
-                currentAccountBalances = mostRecentAccountBalances,
-                ledger = allBalances,
-                userAccounts = mostRecentAccountBalances.toAccounts()
-            )
+                viewState.value?.copy(
+                        currentAccountBalances = mostRecentAccountBalances,
+                        ledger = allBalances,
+                        userAccounts = mostRecentAccountBalances.toAccounts()
+                )
         )
+    }
+
+    fun updateAccountBalance(accountName: String, accountBalance: Float, date: Long) {
+        thread {
+            val currentBalances = accountsDao.getMostRecentAccountBalances()
+            val lastBalance = currentBalances[currentBalances.map { it.accountName }.indexOf(accountName)].accountBalance
+            val percentChange = (accountBalance - lastBalance) / lastBalance * 100f
+            accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentChange, date))
+            // updating our viewstate
+            setAccounts()
+        }
     }
 
 }

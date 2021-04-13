@@ -12,15 +12,12 @@ import com.peluso.walletguru.model.SubmissionCell
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Main recyclerview for showing posts from the reddit feed
- * TODO: refactor this to take in a click listener so we can launch the correct post in a dialog for an expanded view
- * TODO: fix the jumping to the top that occurs every time we delete or add a favorite
- */
+
 class AccountHistoryRecyclerViewAdapter(
-    val cells: List<AccountDto>
+        val cells: List<AccountDto>
 ) : RecyclerView.Adapter<AccountHistoryRecyclerViewAdapter.AccountHistoryRecyclerViewHolder>() {
 
+    //TODO: I'd like this to also include the account name (this shows full ledger, not just of selected account)
     class AccountHistoryRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val dateText: TextView =
                 itemView.findViewById(R.id.accountHistoryDate_Value)
