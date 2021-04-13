@@ -12,12 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.peluso.walletguru.MainApplication
 import com.peluso.walletguru.R
 import com.peluso.walletguru.database.LocalDatabase
 import com.peluso.walletguru.model.AccountDto
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
 import java.lang.Float.parseFloat
+import kotlin.concurrent.thread
 
 class AddAccountFragment : Fragment() {
 
@@ -49,24 +51,30 @@ class AddAccountFragment : Fragment() {
     private fun launchSubmitNewAccount() {
 
         val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Create New Account")
         val view = layoutInflater.inflate(R.layout.fragment_submitnewaccount, null)
 
         val enterAccountNameView = view.findViewById(R.id.enter_new_account_name) as EditText
         val enterAccountBalanceView = view.findViewById(R.id.enter_new_account_balance) as EditText
 
         val accountName = enterAccountNameView.text.toString()
-        val accountBalance = parseFloat(enterAccountBalanceView.text.toString())
+        val accountBalance = enterAccountBalanceView.text.toString()
 
+        if (MainApplication.getDbInstance() != null) {
+            db = MainApplication.getDbInstance()!!
+        }
 
         builder.setPositiveButton("SUBMIT"
         ) { dialog, id ->
-            db.accountsDao().updateBalance(
-                    AccountDto(
-                            accountBalance = accountBalance,
-                            accountName = accountName,
-                            percentChange = 0f,
-                            date = System.currentTimeMillis()
-                    ))
+            thread {
+                /*db.accountsDao().updateBalance(
+                        AccountDto(
+                                accountBalance = parseFloat(accountBalance),
+                                accountName = accountName,
+                                percentChange = 0f,
+                                date = System.currentTimeMillis()
+                        ))*/ null
+            }
         }
 
         builder.setNegativeButton("CANCEL", null)
@@ -74,6 +82,18 @@ class AddAccountFragment : Fragment() {
 
         val dialog = builder.create()
         dialog.show()
+    }
+
+    private fun doesAccountExist(accountName: String): Boolean {
+        val accounts = db.accountsDao().getAllAccounts()
+
+        for (account in accounts) {
+            if (account.accountName == accountName) {
+                return true
+            }
+        }
+
+        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
