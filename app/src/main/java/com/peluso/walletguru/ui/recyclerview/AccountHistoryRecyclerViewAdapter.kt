@@ -25,6 +25,8 @@ class AccountHistoryRecyclerViewAdapter(
                 itemView.findViewById(R.id.accountHistoryBalance_Value)
         private val percentageChangeText: TextView =
                 itemView.findViewById(R.id.accountHistoryPercentage_Value)
+        private val accountText: TextView =
+                itemView.findViewById(R.id.accountHistoryAccount_Value)
 
         fun bind(
                 account: AccountDto
@@ -32,7 +34,7 @@ class AccountHistoryRecyclerViewAdapter(
             dateText.text = convertLongToTime(account.date)
             balanceText.text = account.accountBalance.toString()
             percentageChangeText.text = account.percentChange.toString()
-
+            accountText.text = account.accountName
         }
 
         private fun convertLongToTime(date: Long): String? {
