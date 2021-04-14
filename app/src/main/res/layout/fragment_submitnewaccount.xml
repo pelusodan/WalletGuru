@@ -10,7 +10,7 @@
         android:id="@+id/submit_new_account_name_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account Name: "
+        android:text="Account Type: "
         android:layout_marginTop="50dp"
         android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,16 +18,16 @@
         app:layout_constraintEnd_toStartOf="@id/enter_new_account_name"
         />
 
-    <EditText
+    <Spinner
         android:id="@+id/enter_new_account_name"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:hint="Enter"
+        android:textAlignment="center"
+        android:textSize="30sp"
         app:layout_constraintStart_toEndOf="@id/submit_new_account_name_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/submit_new_account_name_label"
-        app:layout_constraintBottom_toBottomOf="@id/submit_new_account_name_label"
-        />
+        app:layout_constraintBottom_toBottomOf="@id/submit_new_account_name_label" />
 
     <TextView
         android:id="@+id/submit_new_account_balance_label"

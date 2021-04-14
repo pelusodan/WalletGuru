@@ -5,27 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.ListView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.peluso.walletguru.MainApplication
 import com.peluso.walletguru.R
-import com.peluso.walletguru.database.LocalDatabase
-import com.peluso.walletguru.model.AccountDto
+import com.peluso.walletguru.model.Account
+import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
 import java.lang.Float.parseFloat
-import kotlin.concurrent.thread
 
 class AddAccountFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var listView: ListView
-    private lateinit var db: LocalDatabase
+    private lateinit var spinner: Spinner
+    private lateinit var newBalanceText: EditText
+    private lateinit var accountName: String
+    private lateinit var accountBalance: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,17 +32,23 @@ class AddAccountFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_addaccount, container, false)
+        accountName = "TBD"
+        accountBalance = "0"
         initViews(root)
-        viewModel =
-            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+            handleViewState(it)
+        })
     }
 
     private fun initViews(view: View) {
         val syncButton: FloatingActionButton = view.findViewById(R.id.sync_accounts_button)
         listView = view.findViewById(R.id.accounts_listview)
         syncButton.setOnClickListener {
-            //TODO: make this pop up dialog to add account
             launchSubmitNewAccount()
         }
     }
@@ -52,33 +57,85 @@ class AddAccountFragment : Fragment() {
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Create New Account")
+
         val view = layoutInflater.inflate(R.layout.fragment_submitnewaccount, null)
 
-        val enterAccountNameView = view.findViewById(R.id.enter_new_account_name) as EditText
-        val enterAccountBalanceView = view.findViewById(R.id.enter_new_account_balance) as EditText
-
-        val accountName = enterAccountNameView.text.toString()
-        val accountBalance = enterAccountBalanceView.text.toString()
+        spinner = view.findViewById(R.id.enter_new_account_name)
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (parent != null) {
+                    accountName = parent.getItemAtPosition(position).toString()
+                }
+            }
+        }
+        newBalanceText = view.findViewById(R.id.enter_new_account_balance)
 
         builder.setPositiveButton("SUBMIT"
         ) { dialog, id ->
-                /*viewModel.addNewAccount(
+
+            accountBalance = newBalanceText.text.toString()
+
+            if (accountName.isNotEmpty() && accountBalance.isNotEmpty()) {
+                Toast.makeText(
+                    activity,
+                    "Account $accountName with Balace $accountBalance added",
+                    Toast.LENGTH_LONG
+                ).show()
+                viewModel.addNewAccount(
                     accountBalance = parseFloat(accountBalance),
                     accountName = accountName
-                )*/ null
+                )
+            } else if (accountBalance.isEmpty()) {
+                Toast.makeText(
+                    activity,
+                    "No valid Balance entered",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        builder.setNegativeButton("CANCEL", null)
+
+        viewModel.viewState.value?.userAccounts?.let {
+            setupDropdownOptions(it)
         }
 
-        builder.setNegativeButton("CANCEL", null)
         builder.setView(view)
-
-        val dialog = builder.create()
-        dialog.show()
+        builder.create().show()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {
-            handleViewState(it)
-        })
+    private fun setupDropdownOptions(options: List<Account>) {
+
+        val optionAccountNames = ArrayList<String>()
+
+        //build a unique list of account names
+        for (account in options) {
+            if (!optionAccountNames.contains(account.type.tableName)) {
+                optionAccountNames.add(account.type.tableName)
+            }
+        }
+
+        val optionsNotUsed = ArrayList<String>()
+
+        val allNames = AccountType.getAllTypes()
+
+        for (name in allNames) {
+            if (!optionAccountNames.contains(name)) {
+                optionsNotUsed.add(name)
+            }
+        }
+
+        optionsNotUsed.sort()
+
+        val adapter = ArrayAdapter<String>(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            optionsNotUsed
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        spinner.adapter = adapter
     }
 
     private fun handleViewState(state: MainViewState?) {

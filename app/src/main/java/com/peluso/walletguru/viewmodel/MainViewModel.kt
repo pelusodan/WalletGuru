@@ -131,17 +131,15 @@ class MainViewModel : ViewModel() {
             }
 
             //check if new account being added already exist in the list
-            for (name in accountNames) {
-                // if account already exist show toast
-                if (accountNames.contains(accountName)) {
-                    //show Toast
-                } else {
-                    //if account doesnt exist add to balance list
-                    val percentageChange = 0f;
-                    val date = System.currentTimeMillis()
-                    accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentageChange, date))
-                    setAccounts()
-                }
+            // if account already exist show toast
+            if (accountNames.contains(accountName)) {
+                //TODO: show toast saying account already exists
+            } else {
+                //if account doesnt exist add to balance list
+                val percentageChange = 0f;
+                val date = System.currentTimeMillis()
+                accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentageChange, date))
+                setAccounts()
             }
         }
     }
