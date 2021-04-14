@@ -16,6 +16,9 @@ import com.peluso.walletguru.reddit.RedditHelper
 import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.viewstate.MainViewState
 import kotlin.concurrent.thread
+import kotlin.math.round
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class MainViewModel : ViewModel() {
 
@@ -107,7 +110,7 @@ class MainViewModel : ViewModel() {
         thread {
             val currentBalances = accountsDao.getMostRecentAccountBalances()
             val lastBalance = currentBalances[currentBalances.map { it.accountName }.indexOf(accountName)].accountBalance
-            val percentChange = (accountBalance - lastBalance) / lastBalance * 100f
+            val percentChange = round(((accountBalance - lastBalance) / lastBalance * 100f)*1000)/1000
             accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentChange, date))
             // updating our viewstate
             setAccounts()
