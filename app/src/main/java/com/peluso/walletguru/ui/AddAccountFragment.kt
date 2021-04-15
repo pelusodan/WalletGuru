@@ -49,7 +49,15 @@ class AddAccountFragment : Fragment() {
         val syncButton: FloatingActionButton = view.findViewById(R.id.sync_accounts_button)
         listView = view.findViewById(R.id.accounts_listview)
         syncButton.setOnClickListener {
-            launchSubmitNewAccount()
+            if (getAvaliableAccountOptions(viewModel.viewState.value!!.userAccounts).isNotEmpty()) {
+                launchSubmitNewAccount()
+            } else {
+                Toast.makeText(
+                    activity,
+                    "Max number of accounts added!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
@@ -104,19 +112,18 @@ class AddAccountFragment : Fragment() {
         builder.create().show()
     }
 
-    private fun setupDropdownOptions(options: List<Account>) {
+    private fun getAvaliableAccountOptions(myAccounts: List<Account>) : List<String> {
 
         val optionAccountNames = ArrayList<String>()
 
         //build a unique list of account names
-        for (account in options) {
+        for (account in myAccounts) {
             if (!optionAccountNames.contains(account.type.tableName)) {
                 optionAccountNames.add(account.type.tableName)
             }
         }
 
         val optionsNotUsed = ArrayList<String>()
-
         val allNames = AccountType.getAllTypes()
 
         for (name in allNames) {
@@ -126,7 +133,12 @@ class AddAccountFragment : Fragment() {
         }
 
         optionsNotUsed.sort()
+        return optionsNotUsed
+    }
 
+    private fun setupDropdownOptions(options: List<Account>) {
+
+        val optionsNotUsed = getAvaliableAccountOptions(options)
         val adapter = ArrayAdapter<String>(
             requireContext(),
             android.R.layout.simple_spinner_item,
