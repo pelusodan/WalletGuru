@@ -32,8 +32,8 @@ class AccountHistoryRecyclerViewAdapter(
                 account: AccountDto
         ) {
             dateText.text = convertLongToTime(account.date)
-            balanceText.text = account.accountBalance.toString()
-            percentageChangeText.text = account.percentChange.toString()
+            ("$" + account.accountBalance.toString()).also { balanceText.text = it }
+            (account.percentChange.toString() + "%").also { percentageChangeText.text = it }
             accountText.text = account.accountName
         }
 
