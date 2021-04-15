@@ -1,10 +1,8 @@
 package com.peluso.walletguru.viewmodel
 
-import android.accounts.Account
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,11 +16,9 @@ import com.peluso.walletguru.model.toAccounts
 import com.peluso.walletguru.reddit.RedditHelper
 import com.peluso.walletguru.model.SubmissionCell
 import com.peluso.walletguru.viewstate.MainViewState
-import java.util.stream.Collectors
+import java.security.AccessController.getContext
 import kotlin.concurrent.thread
 import kotlin.math.round
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 class MainViewModel : ViewModel() {
 
@@ -136,7 +132,8 @@ class MainViewModel : ViewModel() {
             //check if new account being added already exist in the list
             // if account already exist show toast
             if (accountNames.contains(accountName)) {
-                //TODO: show toast saying account already exists
+                // Toast
+                Toast.makeText(null, "help", Toast.LENGTH_SHORT).show()
             } else {
                 //if account doesnt exist add to balance list
                 val percentageChange = 0f;

@@ -152,7 +152,6 @@ class AddAccountFragment : Fragment() {
 
     private fun handleViewState(state: MainViewState?) {
         state?.let {
-            //TODO: make our own view for this so we can show balance AND acct name
             listView.adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_list_item_1,
