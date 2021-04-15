@@ -44,25 +44,25 @@
             android:id="@+id/accountHistoryBalance_Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:layout_marginTop="5dp"
             android:gravity="right"
-            android:layout_gravity="right"
             android:text="Balance:"
             android:textSize="15dp"
-            app:layout_constraintEnd_toStartOf="@+id/accountHistoryBalance_Value"
-
+            app:layout_constraintEnd_toEndOf="@+id/accountHistoryPercentage_Title"
             app:layout_constraintTop_toBottomOf="@+id/accountHistoryAccount_Value" />
 
         <TextView
             android:id="@+id/accountHistoryBalance_Value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:layout_marginTop="5dp"
             android:gravity="right"
+            android:paddingStart="30dp"
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_gravity="right"
             app:layout_constraintTop_toBottomOf="@+id/accountHistoryDate_Value"
             tools:hint="Balance" />
 
@@ -73,16 +73,16 @@
             android:gravity="right"
             android:text="Percentage Change:"
             android:textSize="15dp"
-            app:layout_constraintEnd_toStartOf="@+id/accountHistoryPercentage_Value"
-
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/accountHistoryBalance_Title" />
 
         <TextView
             android:id="@+id/accountHistoryPercentage_Value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
             android:layout_gravity="right"
+            android:gravity="right"
+            android:paddingStart="30dp"
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
