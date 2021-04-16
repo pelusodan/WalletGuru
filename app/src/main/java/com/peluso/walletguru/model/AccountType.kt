@@ -1,5 +1,7 @@
 package com.peluso.walletguru.model
 
+import kotlin.collections.ArrayList
+
 /**
  * Class responsible for mapping subreddits to the account types we will suppoprt
  * for users. Each list represents which subreddits are included in the category
@@ -12,7 +14,21 @@ enum class AccountType(val subreddits: List<String>, val tableName: String) {
     CRYPTO(listOf("CryptoCurrency", "Bitcoin", "ethereum"), "crypto"),
     CHECKING(listOf("personalfinance"), "checking"),
     SAVING(listOf("Frugal", "financialindependence", "povertyfinance"), "saving"),
-    REALESTATE(listOf("realestateinvesting"), "real_estate")
+    REALESTATE(listOf("realestateinvesting"), "real_estate");
+
+    companion object {
+        fun getAllTypes(): List<String> {
+            val list = ArrayList<String>()
+            list.add(CREDIT_CARD.tableName)
+            list.add(INVESTMENT.tableName)
+            list.add(MORTGAGE.tableName)
+            list.add(CRYPTO.tableName)
+            list.add(CHECKING.tableName)
+            list.add(SAVING.tableName)
+            list.add(REALESTATE.tableName)
+            return list
+        }
+    }
 }
 
 /**
