@@ -3,14 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_about"
         android:icon="@mipmap/about_foreground"
-        android:title="@string/settings"
+        android:title="@string/about"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_favorites"
         android:icon="@drawable/ic_favorite"
         android:title="@string/favorites"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
         app:showAsAction="ifRoom" />
 </menu>

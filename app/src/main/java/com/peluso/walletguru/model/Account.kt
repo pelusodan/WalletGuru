@@ -8,21 +8,23 @@ import kotlin.math.abs
  * Class which represents a financial account to be tracked in our application. An account is linked
  * to certain subreddits, and based on the performance of the account these posts are prioritized
  */
-class Account(val type: AccountType, val currentBalance: Float, val percentageChange: Float) {
+class Account(val type: PostType, val currentBalance: Float, val percentageChange: Float) {
 
     companion object {
-        fun List<Account>.orderSubmissions(accountMap: Map<AccountType, List<Submission>>):
+        fun List<Account>.orderSubmissions(accountMap: Map<PostType, List<Submission>>):
                 List<Submission> {
-            //TODO: refactor to use the new parameters (provide mapping of account type to submission list)
-            // I've kept your below code as a reference
-
-            val sortedAccounts = this.sortedByDescending { abs(it.percentageChange) }
-
+            // getting the country from the map, and if we find a country adding it to the account sorting
+            val countryPostType = accountMap.keys.find { it is CountryType }
+            val sortedAccounts = this as MutableList
+            countryPostType?.let {
+                sortedAccounts.add(Account(it, 0f, 20f))
+            }
+            sortedAccounts.sortedByDescending { abs(it.percentageChange) }
             val subredditRankings = sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
 
             // show all first posts in order of priority accounts, then all second posts
             // in order of priority accounts, then all third posts and so forth
-            val sortedAccountMap = LinkedHashMap<AccountType, List<Submission>>()
+            val sortedAccountMap = LinkedHashMap<PostType, List<Submission>>()
 
             subredditRankings.entries.forEach {
                 if (accountMap.containsKey(it.key)) {
@@ -45,7 +47,7 @@ class Account(val type: AccountType, val currentBalance: Float, val percentageCh
             for (i in 0..maxLoopCounter) {
                 sortedAccountMap.entries.forEach {
                     if (i < it.value.size)
-                    sortedArray.add(it.value[i])
+                        sortedArray.add(it.value[i])
                 }
             }
 
