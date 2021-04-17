@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
@@ -26,12 +27,25 @@ import kotlin.math.round
 
 class MainViewModel : ViewModel() {
 
+    private val locationManager by lazy { (appContext?.getSystemService(Context.LOCATION_SERVICE) as LocationManager) }
+    private var appContext: Context? = null
+    private val locationListener: LocationListener = LocationListener { location ->
+        appContext?.let { context ->
+            getCountryFromLocation(location, context)?.let {
+                // if we successfully get a country
+                _viewState.postValue(_viewState.value?.copy(countryType = it, locationEnabled = true))
+            } ?: kotlin.run {
+                // else statement for if we get no country
+                Toast.makeText(context, "Country does not have location-based finance communities", Toast.LENGTH_LONG).show()
+            }
+        }
+
+    }
     private lateinit var sharedPrefPutter: (String?) -> Unit?
     private lateinit var accountsDao: AccountsDao
     private lateinit var favoritesDao: FavoritesDao
     private val _viewState: MutableLiveData<MainViewState> = MutableLiveData(MainViewState())
     val viewState: LiveData<MainViewState> = _viewState
-
     private var redditHelper: RedditHelper? = null
 
     fun initRedditHelper(context: Context, locationGetter: () -> CountryType?) {
@@ -166,8 +180,9 @@ class MainViewModel : ViewModel() {
 
     @SuppressLint("MissingPermission")
     fun enableLocation(context: Context) {
+        // hacky, but we need a way to give our location manager updates
+        appContext = context
         _viewState.postValue(viewState.value?.copy(locationEnabled = true))
-        val locationManager = (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).also { location ->
             getCountryFromLocation(location, context)?.let {
                 // if we successfully get a country
@@ -177,7 +192,8 @@ class MainViewModel : ViewModel() {
                 Toast.makeText(context, "Country does not have location-based finance communities", Toast.LENGTH_LONG).show()
             }
         }
-
+        // also attempts to get location updates
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0f, locationListener)
     }
 
     private fun getCountryFromLocation(location: Location?, context: Context): CountryType? {
@@ -187,6 +203,7 @@ class MainViewModel : ViewModel() {
                 // if we do get the country, load into shared prefs
                 sharedPrefPutter(type.country)
             }
+            locationManager.removeUpdates(locationListener)
             return countryType
         }
         return null

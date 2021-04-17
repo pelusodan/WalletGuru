@@ -30,7 +30,7 @@ class SettingsFragment : Fragment() {
     private lateinit var locationSwitch: SwitchCompat
 
     // permissions
-    val isLocationPermissionGranted
+    private val isLocationPermissionGranted
         get() = requireContext().hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
 
     private fun requestLocationPermission() {
