@@ -10,11 +10,11 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.Account
+import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.ui.recyclerview.AccountHistoryRecyclerViewAdapter
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
@@ -81,7 +81,7 @@ class UpdateBalanceFragment : Fragment() {
         val adapter = ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                options.sortedBy { it.type.tableName }.toMutableList().map { it.type.tableName }
+                options.filter { it.type is AccountType }.sortedBy { it.type.tableName }.toMutableList().map { it.type.tableName }
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }

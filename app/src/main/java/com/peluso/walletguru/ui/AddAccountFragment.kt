@@ -27,9 +27,9 @@ class AddAccountFragment : Fragment() {
     private lateinit var accountBalance: String
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_addaccount, container, false)
         accountName = "TBD"
@@ -53,9 +53,9 @@ class AddAccountFragment : Fragment() {
                 launchSubmitNewAccount()
             } else {
                 Toast.makeText(
-                    activity,
-                    "Max number of accounts added!",
-                    Toast.LENGTH_LONG
+                        activity,
+                        "Max number of accounts added!",
+                        Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -80,25 +80,25 @@ class AddAccountFragment : Fragment() {
         newBalanceText = view.findViewById(R.id.enter_new_account_balance)
 
         builder.setPositiveButton("SUBMIT"
-        ) { dialog, id ->
+        ) { _, _ ->
 
             accountBalance = newBalanceText.text.toString()
 
             if (accountName.isNotEmpty() && accountBalance.isNotEmpty()) {
                 Toast.makeText(
-                    activity,
-                    "Account $accountName with Balace $accountBalance added",
-                    Toast.LENGTH_LONG
+                        activity,
+                        "Account $accountName with Balace $accountBalance added",
+                        Toast.LENGTH_LONG
                 ).show()
                 viewModel.addNewAccount(
-                    accountBalance = parseFloat(accountBalance),
-                    accountName = accountName
+                        accountBalance = parseFloat(accountBalance),
+                        accountName = accountName
                 )
             } else if (accountBalance.isEmpty()) {
                 Toast.makeText(
-                    activity,
-                    "No valid Balance entered",
-                    Toast.LENGTH_LONG
+                        activity,
+                        "No valid Balance entered",
+                        Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -112,12 +112,12 @@ class AddAccountFragment : Fragment() {
         builder.create().show()
     }
 
-    private fun getAvaliableAccountOptions(myAccounts: List<Account>) : List<String> {
+    private fun getAvaliableAccountOptions(myAccounts: List<Account>): List<String> {
 
         val optionAccountNames = ArrayList<String>()
 
         //build a unique list of account names
-        for (account in myAccounts) {
+        for (account in myAccounts.filter { it.type is AccountType }) {
             if (!optionAccountNames.contains(account.type.tableName)) {
                 optionAccountNames.add(account.type.tableName)
             }
@@ -140,9 +140,9 @@ class AddAccountFragment : Fragment() {
 
         val optionsNotUsed = getAvaliableAccountOptions(options)
         val adapter = ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionsNotUsed
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                optionsNotUsed
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
@@ -151,11 +151,11 @@ class AddAccountFragment : Fragment() {
     }
 
     private fun handleViewState(state: MainViewState?) {
-        state?.let {
+        state?.let { viewState ->
             listView.adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                it.currentAccountBalances.map { it.accountName }
+                    requireContext(),
+                    android.R.layout.simple_list_item_1,
+                    viewState.currentAccountBalances.map { it.accountName }
             )
         }
     }

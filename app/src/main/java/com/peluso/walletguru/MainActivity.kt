@@ -1,5 +1,6 @@
 package com.peluso.walletguru
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +13,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.peluso.walletguru.viewmodel.MainViewModel
+
+const val LOCATION_PREF_KEY = "locationPrefs"
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,9 +32,9 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_dashboard, R.id.navigation_home, R.id.navigation_notifications
-            )
+                setOf(
+                        R.id.navigation_dashboard, R.id.navigation_home, R.id.navigation_notifications
+                )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -39,7 +42,15 @@ class MainActivity : AppCompatActivity() {
         // immediately after creating the viewmodel we set up the viewmodel to use db
         val db = (application as MainApplication).getDb()
         viewModel.setDatabase(db.accountsDao(), db.favoritesDao())
+        // this allows us to add values to shared prefs from the viewmodel
+        viewModel.setSharedPrefPutter {
+            with(getPreferences(Context.MODE_PRIVATE).edit()) {
+                putString(LOCATION_PREF_KEY, it)
+                apply()
+            }
+        }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
@@ -47,22 +58,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        when (item.itemId) {
-            R.id.action_favorites -> {
-                // TODO: take the user to see their favorites
-                navController.navigate(R.id.favorites_fragment)
-                true
+            when (item.itemId) {
+                R.id.action_favorites -> {
+                    navController.navigate(R.id.favorites_fragment)
+                    true
+                }
+                R.id.action_about -> {
+                    navController.navigate(R.id.about_fragment)
+                    true
+                }
+                android.R.id.home -> {
+                    navController.navigateUp()
+                    true
+                }
+                R.id.action_settings -> {
+                    navController.navigate(R.id.settings_fragment)
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
             }
-            R.id.action_settings -> {
-                // TODO: launch some settings for the user
-                navController.navigate(R.id.about_fragment)
-                true
-            }
-            android.R.id.home -> {
-                navController.navigateUp()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
 
 }

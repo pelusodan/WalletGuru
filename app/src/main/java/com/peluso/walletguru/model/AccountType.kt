@@ -7,7 +7,7 @@ import kotlin.collections.ArrayList
  * for users. Each list represents which subreddits are included in the category
  * of each account
  */
-enum class AccountType(val subreddits: List<String>, val tableName: String) {
+enum class AccountType(override val subreddits: List<String>, override val tableName: String) : PostType {
     CREDIT_CARD(listOf("CreditCards", "CRedit"), "credit_card"),
     INVESTMENT(listOf("investment", "investing"), "investment"),
     MORTGAGE(listOf("realestateinvesting", "personalfinance"), "mortgage"),
@@ -43,7 +43,6 @@ fun String.toAccountType(): AccountType {
         AccountType.CHECKING.tableName -> AccountType.CHECKING
         AccountType.SAVING.tableName -> AccountType.SAVING
         AccountType.REALESTATE.tableName -> AccountType.REALESTATE
-        //TODO: make a better null checker here
         else -> AccountType.REALESTATE
     }
 }
