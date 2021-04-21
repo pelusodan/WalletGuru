@@ -1,6 +1,7 @@
 package com.peluso.walletguru.ui
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,6 +43,7 @@ class FavoritesFragment : Fragment() {
     private fun initViews(root: View) {
         emptyFavoritesLayout = root.findViewById(R.id.empty_favorites_layout)
         recyclerView = root.findViewById(R.id.favorites_recyclerview)
+        viewModel.requestFavorites()
         viewModel.viewState.observe(viewLifecycleOwner, Observer { state ->
             val scrollState = recyclerView.layoutManager?.onSaveInstanceState()
             state.favorites.let { list ->
@@ -76,6 +79,7 @@ class FavoritesFragment : Fragment() {
         val favorite = view.findViewById<ToggleButton>(R.id.favorite_button)
         val urlView = view.findViewById<View>(R.id.detail_webview_layout)
         val webView = view.findViewById<WebView>(R.id.detail_webview)
+        val background = view.findViewById<ConstraintLayout>(R.id.relativeLayout)
         cell.let { cell ->
             title.text = cell.title
             subreddit.text = cell.subreddit
@@ -83,6 +87,15 @@ class FavoritesFragment : Fragment() {
             body.text = cell.body
             votes.text = cell.votes.toString() + " ↑"
             favorite.isChecked = cell.isFavorited
+            if (cell.isLocationBased) {
+                background.setBackgroundColor(
+                    Color.valueOf(0f / 255f, 250f / 255f, 130f / 255f).toArgb()
+                )
+            } else {
+                background.setBackgroundColor(
+                    Color.valueOf(255f / 255f, 87f / 255f, 34f / 255f).toArgb()
+                )
+            }
             favorite.setOnClickListener {
                 viewModel.addToFavorites(cell, favorite.isChecked)
             }

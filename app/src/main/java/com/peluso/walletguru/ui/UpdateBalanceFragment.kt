@@ -32,9 +32,9 @@ class UpdateBalanceFragment : Fragment() {
 
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_updatebalance, container, false)
         selectedAccount = "N/A"
@@ -47,7 +47,7 @@ class UpdateBalanceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel =
-                ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.viewState.observe(viewLifecycleOwner, Observer {
             handleViewState(it)
         })
@@ -58,18 +58,23 @@ class UpdateBalanceFragment : Fragment() {
 
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 if (parent != null) {
                     selectedAccount = parent.getItemAtPosition(position).toString()
                 }
             }
         }
         view.findViewById<View>(R.id.submit_newBalance).setOnClickListener {
-            Toast.makeText(activity, selectedAccount, Toast.LENGTH_LONG).show()
             viewModel.updateAccountBalance(
-                    accountName = selectedAccount,
-                    accountBalance = newBalanceText.text.getFloatValue(),
-                    date = System.currentTimeMillis())
+                accountName = selectedAccount,
+                accountBalance = newBalanceText.text.getFloatValue(),
+                date = System.currentTimeMillis()
+            )
         }
         // so we only set the dropdown options once per screen loading
         viewModel.viewState.value?.userAccounts?.let {
@@ -79,9 +84,10 @@ class UpdateBalanceFragment : Fragment() {
 
     private fun setupDropdownOptions(options: List<Account>) {
         val adapter = ArrayAdapter<String>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                options.filter { it.type is AccountType }.sortedBy { it.type.tableName }.toMutableList().map { it.type.tableName }
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            options.filter { it.type is AccountType }.sortedBy { it.type.tableName }.toMutableList()
+                .map { it.type.tableName }
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
@@ -97,9 +103,9 @@ class UpdateBalanceFragment : Fragment() {
     private fun handleViewState(state: MainViewState) {
         state.ledger.let { ledger ->
             accountRecyclerView.adapter =
-                    AccountHistoryRecyclerViewAdapter(ledger.reversed()).also {
-                        it.notifyDataSetChanged()
-                    }
+                AccountHistoryRecyclerViewAdapter(ledger.reversed()).also {
+                    it.notifyDataSetChanged()
+                }
         }
     }
 }

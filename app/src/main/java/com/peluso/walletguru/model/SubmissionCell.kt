@@ -17,7 +17,8 @@ data class SubmissionCell(
     @ColumnInfo(name = "date") val date: String,
     @ColumnInfo(name = "author") val author: String,
     @ColumnInfo(name = "isFavorited") val isFavorited: Boolean,
-    @ColumnInfo(name = "url") val url: String?
+    @ColumnInfo(name = "url") val url: String?,
+    @ColumnInfo(name = "isLocationBased") val isLocationBased: Boolean
 ) {
 
     companion object {
@@ -35,7 +36,8 @@ data class SubmissionCell(
                 this.createdDate.toString(),
                 author,
                 favorites.map { it.title }.contains(title),
-                url
+                url,
+                subreddit in CountryType.allSubreddits
             )
         }
     }
