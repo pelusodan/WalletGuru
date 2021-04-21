@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.AccountDto
-import com.peluso.walletguru.model.SubmissionCell
+import com.peluso.walletguru.model.AccountType
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,7 +16,6 @@ class AccountHistoryRecyclerViewAdapter(
         val cells: List<AccountDto>
 ) : RecyclerView.Adapter<AccountHistoryRecyclerViewAdapter.AccountHistoryRecyclerViewHolder>() {
 
-    //TODO: I'd like this to also include the account name (this shows full ledger, not just of selected account)
     class AccountHistoryRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val dateText: TextView =
                 itemView.findViewById(R.id.accountHistoryDate_Value)
@@ -34,7 +32,7 @@ class AccountHistoryRecyclerViewAdapter(
             dateText.text = convertLongToTime(account.date)
             ("$" + account.accountBalance.toString()).also { balanceText.text = it }
             (account.percentChange.toString() + "%").also { percentageChangeText.text = it }
-            accountText.text = account.accountName
+            accountText.text = AccountType.getViewNameFromTableName(account.accountName)
         }
 
         private fun convertLongToTime(date: Long): String? {
