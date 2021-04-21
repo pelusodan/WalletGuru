@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.Account
+import com.peluso.walletguru.model.AccountDto
 import com.peluso.walletguru.model.AccountType
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
@@ -27,9 +28,9 @@ class AddAccountFragment : Fragment() {
     private lateinit var accountBalance: String
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_addaccount, container, false)
         accountName = "TBD"
@@ -53,9 +54,9 @@ class AddAccountFragment : Fragment() {
                 launchSubmitNewAccount()
             } else {
                 Toast.makeText(
-                        activity,
-                        "Max number of accounts added!",
-                        Toast.LENGTH_LONG
+                    activity,
+                    "Max number of accounts added!",
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -71,7 +72,12 @@ class AddAccountFragment : Fragment() {
         spinner = view.findViewById(R.id.enter_new_account_name)
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 if (parent != null) {
                     accountName = parent.getItemAtPosition(position).toString()
                 }
@@ -79,26 +85,27 @@ class AddAccountFragment : Fragment() {
         }
         newBalanceText = view.findViewById(R.id.enter_new_account_balance)
 
-        builder.setPositiveButton("SUBMIT"
+        builder.setPositiveButton(
+            "SUBMIT"
         ) { _, _ ->
 
             accountBalance = newBalanceText.text.toString()
 
             if (accountName.isNotEmpty() && accountBalance.isNotEmpty()) {
                 Toast.makeText(
-                        activity,
-                        "Account $accountName with Balace $accountBalance added",
-                        Toast.LENGTH_LONG
+                    activity,
+                    "Account $accountName with Balace $accountBalance added",
+                    Toast.LENGTH_LONG
                 ).show()
                 viewModel.addNewAccount(
-                        accountBalance = parseFloat(accountBalance),
-                        accountName = accountName
+                    accountBalance = parseFloat(accountBalance),
+                    accountName = accountName
                 )
             } else if (accountBalance.isEmpty()) {
                 Toast.makeText(
-                        activity,
-                        "No valid Balance entered",
-                        Toast.LENGTH_LONG
+                    activity,
+                    "No valid Balance entered",
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -138,11 +145,12 @@ class AddAccountFragment : Fragment() {
 
     private fun setupDropdownOptions(options: List<Account>) {
 
-        val optionsNotUsed = getAvaliableAccountOptions(options)
+        val optionsNotUsed =
+            getAvaliableAccountOptions(options).map { AccountType.getViewNameFromTableName(it) }
         val adapter = ArrayAdapter<String>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                optionsNotUsed
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            optionsNotUsed
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
@@ -152,11 +160,38 @@ class AddAccountFragment : Fragment() {
 
     private fun handleViewState(state: MainViewState?) {
         state?.let { viewState ->
-            listView.adapter = ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_list_item_1,
-                    viewState.currentAccountBalances.map { it.accountName }
-            )
+            val adapter = object :
+                ArrayAdapter<AccountViewData>(requireContext(), R.layout.account_view_cell) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val root = layoutInflater.inflate(R.layout.account_view_cell, parent, false)
+                    root?.let {
+                        val accountName: TextView = it.findViewById(R.id.account_view_account_name)
+                        val accountBalance: TextView =
+                            it.findViewById(R.id.account_view_account_balance)
+                        accountName.text = getItem(position)?.accountName
+                        accountBalance.text = getItem(position)?.accountBalance
+                    }
+                    return root
+                }
+            }
+            listView.adapter = adapter.apply {
+                addAll(*viewState.currentAccountBalances.map { it.toAccountViewData() }
+                    .toTypedArray())
+            }
         }
     }
+
+    // inner class for holding array adapter data
+    data class AccountViewData(
+        val accountName: String,
+        val accountBalance: String
+    )
+}
+
+// extension to fill the custom array adapater
+private fun AccountDto.toAccountViewData(): AddAccountFragment.AccountViewData? {
+    return AddAccountFragment.AccountViewData(
+        AccountType.getViewNameFromTableName(this.accountName),
+        "$${this.accountBalance}"
+    )
 }

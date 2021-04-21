@@ -13,13 +13,11 @@ import com.peluso.walletguru.model.SubmissionCell
 
 /**
  * Main recyclerview for showing posts from the reddit feed
- * TODO: refactor this to take in a click listener so we can launch the correct post in a dialog for an expanded view
- * TODO: fix the jumping to the top that occurs every time we delete or add a favorite
  */
 class SubmissionsRecyclerViewAdapter(
-    val cells: List<SubmissionCell>,
-    val onPostClick: (SubmissionCell) -> Unit,
-    val onFavoriteClick: (SubmissionCell, Boolean) -> Unit
+    private val cells: List<SubmissionCell>,
+    private val onPostClick: (SubmissionCell) -> Unit,
+    private val onFavoriteClick: (SubmissionCell, Boolean) -> Unit
 ) : RecyclerView.Adapter<SubmissionsRecyclerViewAdapter.SubmissionsRecyclerViewHolder>() {
 
     class SubmissionsRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,7 +31,7 @@ class SubmissionsRecyclerViewAdapter(
             itemView.findViewById(R.id.subreddit_textview)
         private val authorText: TextView =
             itemView.findViewById(R.id.author_textview)
-        private val favortieToggle: ToggleButton =
+        private val favoriteToggle: ToggleButton =
             itemView.findViewById(R.id.favorite_button)
         private val background: ConstraintLayout =
             itemView.findViewById(R.id.relativeLayout)
@@ -60,9 +58,9 @@ class SubmissionsRecyclerViewAdapter(
             itemView.setOnClickListener {
                 onPostClick(submission)
             }
-            favortieToggle.isChecked = submission.isFavorited
-            favortieToggle.setOnClickListener {
-                onFavoriteClick(submission, favortieToggle.isChecked)
+            favoriteToggle.isChecked = submission.isFavorited
+            favoriteToggle.setOnClickListener {
+                onFavoriteClick(submission, favoriteToggle.isChecked)
             }
         }
     }

@@ -76,6 +76,10 @@ class MainViewModel : ViewModel() {
                             )
                         )
                         return@thread
+                    } else {
+                        _viewState.value?.copy(
+                                hasNoAccounts = null
+                        )
                     }
                     val accountTypes = state.userAccounts.map { it.type } as MutableList
                     // if we have a country, we should add it to the map

@@ -20,7 +20,8 @@ class Account(val type: PostType, val currentBalance: Float, val percentageChang
                 sortedAccounts.add(Account(it, 0f, 20f))
             }
             sortedAccounts.sortedByDescending { abs(it.percentageChange) }
-            val subredditRankings = sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
+            val subredditRankings =
+                sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
 
             // show all first posts in order of priority accounts, then all second posts
             // in order of priority accounts, then all third posts and so forth
@@ -56,7 +57,6 @@ class Account(val type: PostType, val currentBalance: Float, val percentageChang
     }
 }
 
-// TODO: as we add more mandatory fields to the accounts, we'll update this function to add to the constructor
 fun List<AccountDto>.toAccounts(): List<Account> {
     return this.map { Account(it.accountName.toAccountType(), it.accountBalance, it.percentChange) }
 

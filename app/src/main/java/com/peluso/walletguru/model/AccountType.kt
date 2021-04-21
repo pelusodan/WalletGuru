@@ -7,14 +7,18 @@ import kotlin.collections.ArrayList
  * for users. Each list represents which subreddits are included in the category
  * of each account
  */
-enum class AccountType(override val subreddits: List<String>, override val tableName: String) : PostType {
-    CREDIT_CARD(listOf("CreditCards", "CRedit"), "credit_card"),
-    INVESTMENT(listOf("investment", "investing"), "investment"),
-    MORTGAGE(listOf("realestateinvesting", "personalfinance"), "mortgage"),
-    CRYPTO(listOf("CryptoCurrency", "Bitcoin", "ethereum"), "crypto"),
-    CHECKING(listOf("personalfinance"), "checking"),
-    SAVING(listOf("Frugal", "financialindependence", "povertyfinance"), "saving"),
-    REALESTATE(listOf("realestateinvesting"), "real_estate");
+enum class AccountType(
+    override val subreddits: List<String>,
+    override val tableName: String,
+    val viewName: String
+) : PostType {
+    CREDIT_CARD(listOf("CreditCards", "CRedit"), "credit_card", "Credit Card"),
+    INVESTMENT(listOf("investment", "investing"), "investment", "Investment"),
+    MORTGAGE(listOf("realestateinvesting", "personalfinance"), "mortgage", "Mortgage"),
+    CRYPTO(listOf("CryptoCurrency", "Bitcoin", "ethereum"), "crypto", "Crypto"),
+    CHECKING(listOf("personalfinance"), "checking", "Checking"),
+    SAVING(listOf("Frugal", "financialindependence", "povertyfinance"), "saving", "Savings"),
+    REALESTATE(listOf("realestateinvesting"), "real_estate", "Real Estate");
 
     companion object {
         fun getAllTypes(): List<String> {
@@ -27,6 +31,19 @@ enum class AccountType(override val subreddits: List<String>, override val table
             list.add(SAVING.tableName)
             list.add(REALESTATE.tableName)
             return list
+        }
+
+        fun getViewNameFromTableName(tableName: String): String {
+            return when (tableName) {
+                CREDIT_CARD.tableName -> CREDIT_CARD.viewName
+                INVESTMENT.tableName -> INVESTMENT.viewName
+                MORTGAGE.tableName -> MORTGAGE.viewName
+                CRYPTO.tableName -> CRYPTO.viewName
+                CHECKING.tableName -> CHECKING.viewName
+                SAVING.tableName -> SAVING.viewName
+                REALESTATE.tableName -> REALESTATE.viewName
+                else -> tableName
+            }
         }
     }
 }
