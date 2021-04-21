@@ -1,10 +1,12 @@
 package com.peluso.walletguru.ui.recyclerview
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.peluso.walletguru.R
 import com.peluso.walletguru.model.SubmissionCell
@@ -33,12 +35,23 @@ class SubmissionsRecyclerViewAdapter(
             itemView.findViewById(R.id.author_textview)
         private val favortieToggle: ToggleButton =
             itemView.findViewById(R.id.favorite_button)
+        private val background: ConstraintLayout =
+            itemView.findViewById(R.id.relativeLayout)
 
         fun bind(
             submission: SubmissionCell,
             onPostClick: (SubmissionCell) -> Unit,
             onFavoriteClick: (SubmissionCell, Boolean) -> Unit
         ) {
+            if (submission.isLocationBased) {
+                background.setBackgroundColor(
+                    Color.valueOf(0f / 255f, 250f / 255f, 130f / 255f).toArgb()
+                )
+            } else {
+                background.setBackgroundColor(
+                    Color.valueOf(255f / 255f, 87f / 255f, 34f / 255f).toArgb()
+                )
+            }
             titleText.text = submission.title
             bodyText.text = submission.body
             votesText.text = submission.votes.toString() + " ↑"

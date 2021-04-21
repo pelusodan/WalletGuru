@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="SwitchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlActivated">@color/countryGreen</item>
+        <item name="colorSwitchThumbNormal">@color/cardview_dark_background</item>
+        <item name="android:colorForeground">@color/cardview_dark_background</item>
+    </style>
+
+</resources>

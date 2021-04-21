@@ -2,6 +2,7 @@ package com.peluso.walletguru.ui
 
 import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,9 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,12 +39,12 @@ class HomeFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         viewModel =
-                ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         initViews(root)
         return root
@@ -51,7 +54,11 @@ class HomeFragment : Fragment() {
         mainButton = root.findViewById(R.id.main_button)
         mainButton.setOnClickListener {
             viewModel.initRedditHelper(requireContext()) {
-                return@initRedditHelper CountryType.fromString(requireActivity().getPreferences(MODE_PRIVATE).getString(LOCATION_PREF_KEY, null))
+                return@initRedditHelper CountryType.fromString(
+                    requireActivity().getPreferences(
+                        MODE_PRIVATE
+                    ).getString(LOCATION_PREF_KEY, null)
+                )
 
             }
         }
@@ -59,11 +66,11 @@ class HomeFragment : Fragment() {
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.setHasFixedSize(true)
         val itemTouchHelper = ItemTouchHelper(object :
-                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
@@ -81,8 +88,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.viewState.observe(
-                viewLifecycleOwner,
-                Observer { viewState -> handleViewState(viewState) })
+            viewLifecycleOwner,
+            Observer { viewState -> handleViewState(viewState) })
     }
 
     private fun handleViewState(viewState: MainViewState?) {
@@ -93,21 +100,26 @@ class HomeFragment : Fragment() {
             viewState.submissions?.let { list ->
                 val state = mainRecyclerView.layoutManager?.onSaveInstanceState()
                 mainRecyclerView.adapter =
-                        SubmissionsRecyclerViewAdapter(
-                                // makes sure that each time we get new favorites that they are checked in the recyclerview
-                                list.map { it.toSubmissionCell(viewState.favorites) },
-                                { launchDetailView(it) },
-                                { cell, shouldAdd ->
-                                    viewModel.addToFavorites(cell, shouldAdd)
-                                })
-                                .also {
-                                    it.notifyDataSetChanged()
-                                    state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
-                                }
+                    SubmissionsRecyclerViewAdapter(
+                        // makes sure that each time we get new favorites that they are checked in the recyclerview
+                        list.map { it.toSubmissionCell(viewState.favorites) },
+                        { launchDetailView(it) },
+                        { cell, shouldAdd ->
+                            viewModel.addToFavorites(cell, shouldAdd)
+                        }
+                    )
+                        .also {
+                            it.notifyDataSetChanged()
+                            state?.let { mainRecyclerView.layoutManager?.onRestoreInstanceState(it) }
+                        }
             } ?: kotlin.run {
                 // this is sort of like an `else` for the null check that happens above
                 // in this case we will show an empty screen while we load
-                mainRecyclerView.adapter = SubmissionsRecyclerViewAdapter(listOf(), {}, { _, _ -> })
+                mainRecyclerView.adapter =
+                    SubmissionsRecyclerViewAdapter(listOf(), {}, { _, _ -> })
+            }
+            viewState.hasNoAccounts?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -124,6 +136,7 @@ class HomeFragment : Fragment() {
         val favorite = view.findViewById<ToggleButton>(R.id.favorite_button)
         val urlView = view.findViewById<View>(R.id.detail_webview_layout)
         val webView = view.findViewById<WebView>(R.id.detail_webview)
+        val background = view.findViewById<ConstraintLayout>(R.id.relativeLayout)
         cell.let { cell ->
             title.text = cell.title
             subreddit.text = cell.subreddit
@@ -131,6 +144,15 @@ class HomeFragment : Fragment() {
             body.text = cell.body
             votes.text = cell.votes.toString() + " ↑"
             favorite.isChecked = cell.isFavorited
+            if (cell.isLocationBased) {
+                background.setBackgroundColor(
+                    Color.valueOf(0f / 255f, 250f / 255f, 130f / 255f).toArgb()
+                )
+            } else {
+                background.setBackgroundColor(
+                    Color.valueOf(255f / 255f, 87f / 255f, 34f / 255f).toArgb()
+                )
+            }
             favorite.setOnClickListener {
                 viewModel.addToFavorites(cell, favorite.isChecked)
             }

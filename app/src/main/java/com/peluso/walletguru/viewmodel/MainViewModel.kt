@@ -7,7 +7,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,10 +32,15 @@ class MainViewModel : ViewModel() {
         appContext?.let { context ->
             getCountryFromLocation(location, context)?.let {
                 // if we successfully get a country
-                _viewState.postValue(_viewState.value?.copy(countryType = it, locationEnabled = true))
+                _viewState.postValue(
+                    _viewState.value?.copy(
+                        countryType = it,
+                        locationEnabled = true
+                    )
+                )
             } ?: kotlin.run {
                 // else statement for if we get no country
-                Toast.makeText(context, "Country does not have location-based finance communities", Toast.LENGTH_LONG).show()
+                _viewState.postValue(_viewState.value?.copy(hasNoAccounts = "Country does not have location-based finance communities"))
             }
         }
 
@@ -55,12 +59,22 @@ class MainViewModel : ViewModel() {
                 redditHelper = RedditHelper(context).apply {
                     // grabbing the location from shared prefs if we have it
                     locationGetter()?.let {
-                        _viewState.postValue(_viewState.value?.copy(locationEnabled = true, countryType = it))
+                        _viewState.postValue(
+                            _viewState.value?.copy(
+                                locationEnabled = true,
+                                countryType = it
+                            )
+                        )
                     }
                     // so we don't cast to an empty list
                     if (state.userAccounts.isEmpty()) {
-                        Toast.makeText(context, "Need to add accounts to get Reddit content", Toast.LENGTH_LONG).show()
-                        _viewState.postValue(_viewState.value?.copy(isLoading = false, submissions = null))
+                        _viewState.postValue(
+                            _viewState.value?.copy(
+                                isLoading = false,
+                                submissions = null,
+                                hasNoAccounts = "You must add an account to receive custom filtered content"
+                            )
+                        )
                         return@thread
                     }
                     val accountTypes = state.userAccounts.map { it.type } as MutableList
@@ -69,7 +83,7 @@ class MainViewModel : ViewModel() {
                         accountTypes.add(countryType)
                     }
                     getSubmissionsFromAccountTypes(
-                            *accountTypes.toTypedArray()
+                        *accountTypes.toTypedArray()
                     ).let { orderSubmissions(it) }
                 }
             }
@@ -79,10 +93,10 @@ class MainViewModel : ViewModel() {
     private fun orderSubmissions(map: Map<PostType, List<Submission>>) {
         _viewState.value?.userAccounts?.let {
             _viewState.postValue(
-                    _viewState.value?.copy(
-                            submissions = it.orderSubmissions(map),
-                            isLoading = false
-                    )
+                _viewState.value?.copy(
+                    submissions = it.orderSubmissions(map),
+                    isLoading = false
+                )
             )
         }
     }
@@ -130,21 +144,22 @@ class MainViewModel : ViewModel() {
     private fun setAccounts() {
         val allBalances = accountsDao.getAllAccounts()
         val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
-        Log.wtf("TAG", allBalances.map { it.toString() + "\n\n" }.reduce { acc, s -> acc + s })
         _viewState.postValue(
-                viewState.value?.copy(
-                        currentAccountBalances = mostRecentAccountBalances,
-                        ledger = allBalances,
-                        userAccounts = mostRecentAccountBalances.toAccounts()
-                )
+            viewState.value?.copy(
+                currentAccountBalances = mostRecentAccountBalances,
+                ledger = allBalances,
+                userAccounts = mostRecentAccountBalances.toAccounts()
+            )
         )
     }
 
     fun updateAccountBalance(accountName: String, accountBalance: Float, date: Long) {
         thread {
             val currentBalances = accountsDao.getMostRecentAccountBalances()
-            val lastBalance = currentBalances[currentBalances.map { it.accountName }.indexOf(accountName)].accountBalance
-            val percentChange = round(((accountBalance - lastBalance) / lastBalance * 100f) * 1000) / 1000
+            val lastBalance = currentBalances[currentBalances.map { it.accountName }
+                .indexOf(accountName)].accountBalance
+            val percentChange =
+                round(((accountBalance - lastBalance) / lastBalance * 100f) * 1000) / 1000
             accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentChange, date))
             // updating our viewstate
             setAccounts()
@@ -166,13 +181,19 @@ class MainViewModel : ViewModel() {
             //check if new account being added already exist in the list
             // if account already exist show toast
             if (accountNames.contains(accountName)) {
-                // Toast
-                Toast.makeText(null, "help", Toast.LENGTH_SHORT).show()
+                _viewState.postValue(_viewState.value?.copy(hasNoAccounts = "Account already exists"))
             } else {
                 //if account doesn't exist add to balance list
                 val percentageChange = 0f
                 val date = System.currentTimeMillis()
-                accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentageChange, date))
+                accountsDao.updateBalance(
+                    AccountDto(
+                        accountName,
+                        accountBalance,
+                        percentageChange,
+                        date
+                    )
+                )
                 setAccounts()
             }
         }
@@ -186,20 +207,36 @@ class MainViewModel : ViewModel() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).also { location ->
             getCountryFromLocation(location, context)?.let {
                 // if we successfully get a country
-                _viewState.postValue(_viewState.value?.copy(countryType = it, locationEnabled = true))
+                _viewState.postValue(
+                    _viewState.value?.copy(
+                        countryType = it,
+                        locationEnabled = true
+                    )
+                )
             } ?: kotlin.run {
                 // else statement for if we get no country
-                Toast.makeText(context, "Country does not have location-based finance communities", Toast.LENGTH_LONG).show()
+                _viewState.postValue(_viewState.value?.copy(hasNoAccounts = "Country does not have location-based finance communities"))
             }
         }
         // also attempts to get location updates
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0f, locationListener)
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            1000,
+            0f,
+            locationListener
+        )
     }
 
     private fun getCountryFromLocation(location: Location?, context: Context): CountryType? {
         location?.let {
             val gcd = Geocoder(context, Locale.getDefault())
-            val countryType = CountryType.fromString(gcd.getFromLocation(it.latitude, it.longitude, 1)[0].countryName)?.also { type ->
+            val countryType = CountryType.fromString(
+                gcd.getFromLocation(
+                    it.latitude,
+                    it.longitude,
+                    1
+                )[0].countryName
+            )?.also { type ->
                 // if we do get the country, load into shared prefs
                 sharedPrefPutter(type.country)
             }
@@ -211,13 +248,25 @@ class MainViewModel : ViewModel() {
 
     fun disableLocation() {
         viewState.value?.userAccounts?.filter { it.type is AccountType }?.let {
-            _viewState.postValue(viewState.value?.copy(locationEnabled = false, countryType = null, userAccounts = it))
+            _viewState.postValue(
+                viewState.value?.copy(
+                    locationEnabled = false,
+                    countryType = null,
+                    userAccounts = it
+                )
+            )
         }
         sharedPrefPutter(null)
     }
 
     fun setSharedPrefPutter(function: (String?) -> Unit) {
         sharedPrefPutter = function
+    }
+
+    fun requestFavorites() {
+        thread {
+            setFavorites()
+        }
     }
 
 }
