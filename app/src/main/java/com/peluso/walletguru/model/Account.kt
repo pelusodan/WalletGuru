@@ -2,6 +2,9 @@ package com.peluso.walletguru.model
 
 import com.kirkbushman.araw.models.Submission
 import com.peluso.walletguru.model.Account.Companion.orderSubmissions
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 import kotlin.math.abs
 
 /**
@@ -15,11 +18,12 @@ class Account(val type: PostType, val currentBalance: Float, val percentageChang
                 List<Submission> {
             // getting the country from the map, and if we find a country adding it to the account sorting
             val countryPostType = accountMap.keys.find { it is CountryType }
-            val sortedAccounts = this as MutableList
+            var sortedAccounts = this as MutableList
             countryPostType?.let {
                 sortedAccounts.add(Account(it, 0f, 20f))
             }
-            sortedAccounts.sortedByDescending { abs(it.percentageChange) }
+            sortedAccounts = sortedAccounts.sortedByDescending { abs(it.percentageChange) }.toMutableList()
+            
             val subredditRankings =
                 sortedAccounts.map { it.type to sortedAccounts.indexOf(it) }.toMap()
 
