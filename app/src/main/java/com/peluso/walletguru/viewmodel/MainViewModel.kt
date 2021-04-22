@@ -67,20 +67,21 @@ class MainViewModel : ViewModel() {
                         )
                     }
                     // so we don't cast to an empty list
-                    if (state.userAccounts.isEmpty()) {
-                        _viewState.postValue(
-                            _viewState.value?.copy(
-                                isLoading = false,
-                                submissions = null,
-                                hasNoAccounts = "You must add an account to receive custom filtered content"
-                            )
-                        )
-                        return@thread
-                    } else {
-                        _viewState.value?.copy(
-                                hasNoAccounts = null
-                        )
-                    }
+                    _viewState.postValue(
+                            if (state.userAccounts.isEmpty()) {
+                                _viewState.value?.copy(
+                                        isLoading = false,
+                                        submissions = null,
+                                        hasNoAccounts = "You must add an account to receive custom filtered content"
+                                )
+                                return@thread
+                            } else {
+                                _viewState.value?.copy(
+                                        hasNoAccounts = null
+                                )
+                            }
+                    )
+
                     val accountTypes = state.userAccounts.map { it.type } as MutableList
                     // if we have a country, we should add it to the map
                     _viewState.value?.countryType?.let { countryType ->
@@ -148,11 +149,16 @@ class MainViewModel : ViewModel() {
     private fun setAccounts() {
         val allBalances = accountsDao.getAllAccounts()
         val mostRecentAccountBalances = accountsDao.getMostRecentAccountBalances()
+        var hasNoAccount: String? = null
+        if(allBalances.isEmpty()){
+            hasNoAccount = "Must add account to see Reddit submissions"
+        }
         _viewState.postValue(
             viewState.value?.copy(
                 currentAccountBalances = mostRecentAccountBalances,
                 ledger = allBalances,
-                userAccounts = mostRecentAccountBalances.toAccounts()
+                userAccounts = mostRecentAccountBalances.toAccounts(),
+                hasNoAccounts = hasNoAccount
             )
         )
     }
@@ -160,6 +166,9 @@ class MainViewModel : ViewModel() {
     fun updateAccountBalance(accountName: String, accountBalance: Float, date: Long) {
         thread {
             val currentBalances = accountsDao.getMostRecentAccountBalances()
+            if (currentBalances.isEmpty()) {
+                return@thread
+            }
             val lastBalance = currentBalances[currentBalances.map { it.accountName }
                 .indexOf(accountName)].accountBalance
             val percentChange =

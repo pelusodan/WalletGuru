@@ -62,6 +62,6 @@ class Account(val type: PostType, val currentBalance: Float, val percentageChang
 }
 
 fun List<AccountDto>.toAccounts(): List<Account> {
-    return this.map { Account(it.accountName.toAccountType(), it.accountBalance, it.percentChange) }
+    return this.map { Account(AccountType.getViewNameFromTableName(it.accountName).toAccountType(), it.accountBalance, it.percentChange) }
 
 }

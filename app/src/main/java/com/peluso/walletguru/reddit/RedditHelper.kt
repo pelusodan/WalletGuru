@@ -67,11 +67,7 @@ class RedditHelper(context: Context) {
             }
         }
         // logging our results
-        logger(map.keys.map { postType ->
-            "${postType}\n\n" +
-                    map[postType]?.map { "r/${it.subreddit} : ${it.title}" }
-                            ?.reduce { acc, s -> "$acc\n + $s" }
-        }.reduce { acc, s -> "$acc\n $s" })
+        logger(map.toString())
         return map
     }
 }

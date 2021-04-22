@@ -14,6 +14,7 @@ import com.peluso.walletguru.R
 import com.peluso.walletguru.model.Account
 import com.peluso.walletguru.model.AccountDto
 import com.peluso.walletguru.model.AccountType
+import com.peluso.walletguru.model.toAccountType
 import com.peluso.walletguru.viewmodel.MainViewModel
 import com.peluso.walletguru.viewstate.MainViewState
 import java.lang.Float.parseFloat
@@ -79,7 +80,11 @@ class AddAccountFragment : Fragment() {
                 id: Long
             ) {
                 if (parent != null) {
-                    accountName = parent.getItemAtPosition(position).toString()
+                    accountName = parent
+                            .getItemAtPosition(position)
+                            .toString()
+                            .toAccountType()
+                            .tableName
                 }
             }
         }

@@ -53,13 +53,13 @@ enum class AccountType(
  */
 fun String.toAccountType(): AccountType {
     return when (this) {
-        AccountType.CREDIT_CARD.tableName -> AccountType.CREDIT_CARD
-        AccountType.INVESTMENT.tableName -> AccountType.INVESTMENT
-        AccountType.MORTGAGE.tableName -> AccountType.MORTGAGE
-        AccountType.CRYPTO.tableName -> AccountType.CRYPTO
-        AccountType.CHECKING.tableName -> AccountType.CHECKING
-        AccountType.SAVING.tableName -> AccountType.SAVING
-        AccountType.REALESTATE.tableName -> AccountType.REALESTATE
+        AccountType.CREDIT_CARD.viewName -> AccountType.CREDIT_CARD
+        AccountType.INVESTMENT.viewName -> AccountType.INVESTMENT
+        AccountType.MORTGAGE.viewName -> AccountType.MORTGAGE
+        AccountType.CRYPTO.viewName -> AccountType.CRYPTO
+        AccountType.CHECKING.viewName -> AccountType.CHECKING
+        AccountType.SAVING.viewName -> AccountType.SAVING
+        AccountType.REALESTATE.viewName -> AccountType.REALESTATE
         else -> AccountType.REALESTATE
     }
 }
