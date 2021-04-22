@@ -161,7 +161,7 @@ class MainViewModel : ViewModel() {
         thread {
             val currentBalances = accountsDao.getMostRecentAccountBalances()
             val lastBalance = currentBalances[currentBalances.map { it.accountName }
-                .indexOf(accountName)].accountBalance
+                .indexOf(AccountType.getViewNameFromTableName(accountName))].accountBalance
             val percentChange =
                 round(((accountBalance - lastBalance) / lastBalance * 100f) * 1000) / 1000
             accountsDao.updateBalance(AccountDto(accountName, accountBalance, percentChange, date))
